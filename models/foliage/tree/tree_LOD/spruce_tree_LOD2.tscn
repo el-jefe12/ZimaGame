@@ -1,0 +1,54 @@
+[gd_scene load_steps=6 format=4 uid="uid://b7n5pc5kfrc16"]
+
+[ext_resource type="Texture2D" uid="uid://byyqtpeumtki" path="res://gfx/textures/models/foliage/tree/tree_LOD/spruce_tree_LOD_lighter.png" id="1_hddfq"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ag2v7"]
+resource_name = "spruce"
+transparency = 2
+alpha_scissor_threshold = 0.25
+alpha_antialiasing_mode = 0
+cull_mode = 2
+albedo_texture = ExtResource("1_hddfq")
+roughness = 0.5
+texture_repeat = false
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hys6a"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_5k1gx"]
+_surfaces = [{
+"aabb": AABB(-10.5, -2.5, -10.5, 21, 21, 21),
+"format": 34896613377,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUA"),
+"material": SubResource("ShaderMaterial_hys6a"),
+"name": "spruce",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("//8AAP9/AAAAAP///38AAAAAAAD/fwAA//////9/AAD/fwAA//8AAP9///8AAAAA/38AAAAAAAD/f/7///8AAA==")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_ecpss"]
+resource_name = "spruce_tree_LOD_spruce_LOD"
+_surfaces = [{
+"aabb": AABB(-10.5, -2.5, -10.5, 21, 21, 21),
+"attribute_data": PackedByteArray("AAD/////AAD/////AAAAAAAA/////wAA/////wAAAAA="),
+"format": 34896613399,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUA"),
+"material": SubResource("StandardMaterial3D_ag2v7"),
+"name": "spruce",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("//8AAP9///8AAP///3///wAAAAD/f/////////9/////fwAA////v/9///8AAP+//38AAAAA/7//f/7/////v/9/////f////3////9/////fwAA/38AAP9/AAD/fwAA")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_5k1gx")
+
+[node name="spruce_tree_LOD" type="Node3D"]
+
+[node name="spruce_LOD" type="MeshInstance3D" parent="."]
+mesh = SubResource("ArrayMesh_ecpss")
+skeleton = NodePath("")

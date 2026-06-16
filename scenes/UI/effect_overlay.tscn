@@ -1,0 +1,38 @@
+[gd_scene load_steps=4 format=3 uid="uid://c10b11dettwp7"]
+
+[ext_resource type="Script" uid="uid://b326rr1rl5td" path="res://scripts/UI/StatusEffectOverlay.cs" id="1_hk37w"]
+[ext_resource type="Texture2D" uid="uid://dt6cmvrsq5brx" path="res://gfx/UI/gameUI/effectOverlay/freeze_overlay.png" id="1_niets"]
+[ext_resource type="Texture2D" uid="uid://d0y0su42iw0tu" path="res://gfx/UI/gameUI/effectOverlay/injury_overlay.png" id="2_0vsgw"]
+
+[node name="EffectOverlay" type="Control" node_paths=PackedStringArray("FreezingEffect", "InjuredEffect")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_hk37w")
+FreezingEffect = NodePath("FreezingEffect")
+InjuredEffect = NodePath("InjuredEffect")
+
+[node name="FreezingEffect" type="TextureRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_niets")
+expand_mode = 2
+
+[node name="InjuredEffect" type="TextureRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_0vsgw")
+expand_mode = 2

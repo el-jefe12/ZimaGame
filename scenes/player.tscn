@@ -1,0 +1,190 @@
+[gd_scene load_steps=33 format=3 uid="uid://dxbgqllnn0xx8"]
+
+[ext_resource type="Script" uid="uid://dmabufsa151ot" path="res://scripts/player/playerScripts/PlayerController.cs" id="1_y4r1p"]
+[ext_resource type="PackedScene" uid="uid://c10b11dettwp7" path="res://scenes/UI/effect_overlay.tscn" id="2_4r5pv"]
+[ext_resource type="PackedScene" uid="uid://iltiasdufm8g" path="res://scenes/UI/game_ui.tscn" id="2_g2els"]
+[ext_resource type="PackedScene" uid="uid://3iqnsh7wlndi" path="res://scenes/weapons.tscn" id="4_smehm"]
+[ext_resource type="PackedScene" uid="uid://csddblknjucmn" path="res://scenes/dev/debug_values.tscn" id="4_tuyoq"]
+[ext_resource type="Script" uid="uid://bluy4glxx628n" path="res://scripts/player/PlayerHeadbob.cs" id="5_qlg0r"]
+[ext_resource type="Script" uid="uid://pk7l82r7th13" path="res://scripts/game/raycast/raycast_viewLogic.cs" id="5_tuyoq"]
+[ext_resource type="Script" uid="uid://duiatsc1mo7r5" path="res://scripts/game/misc/SubViewportScreenSizeMatch.cs" id="5_ur7pv"]
+[ext_resource type="Script" uid="uid://55lj3y5o2e88" path="res://scripts/player/actions/PlayerInteractor.cs" id="6_smehm"]
+[ext_resource type="Script" uid="uid://bueg1jg4toh8v" path="res://scripts/player/inventory/PlayerInventory.cs" id="7_fjrip"]
+[ext_resource type="Script" uid="uid://cbxqk8d25bs7w" path="res://scripts/player/playerScripts/PlayerHealthSystem.cs" id="7_qfm1y"]
+[ext_resource type="Script" uid="uid://b0rpsu28diyt" path="res://scripts/player/playerScripts/PlayerFallDamage.cs" id="8_fulsm"]
+[ext_resource type="Script" uid="uid://cru76ev57i7d3" path="res://scripts/player/playerScripts/PlayerStats.cs" id="9_4r5pv"]
+[ext_resource type="Script" uid="uid://b05pl3yp8lhm7" path="res://scripts/player/playerScripts/PlayerNeedsSystem.cs" id="10_60mlk"]
+[ext_resource type="Script" uid="uid://d3klgqc6e1hlr" path="res://scripts/game/world/DistantModelDetection.cs" id="10_y4r1p"]
+[ext_resource type="Script" uid="uid://o0k25v2hcm3v" path="res://scripts/player/playerScripts/PlayerFootsteps.cs" id="12_i4ail"]
+[ext_resource type="Script" uid="uid://btm8of7rnwoyj" path="res://scripts/player/playerScripts/PlayerPushSystem.cs" id="15_a38lo"]
+[ext_resource type="Script" uid="uid://cplhado2gluoq" path="res://scripts/player/playerScripts/PlayerTemperatureSystem.cs" id="16_4ni07"]
+[ext_resource type="Script" uid="uid://m2f7h5b81nkv" path="res://data/Item.cs" id="16_l71n6"]
+[ext_resource type="Script" uid="uid://b8txww1x6l80s" path="res://scripts/player/PlayerWaterHandler.cs" id="17_fulsm"]
+[ext_resource type="Resource" uid="uid://cc4ys3yuf0f6h" path="res://resources/Items/water_bottle.tres" id="17_ke2ow"]
+[ext_resource type="Resource" uid="uid://w70e7n8npycj" path="res://resources/Items/knife.tres" id="18_ujl30"]
+[ext_resource type="Resource" uid="uid://chgkujhqjgjw5" path="res://resources/Items/matches.tres" id="19_31cv2"]
+[ext_resource type="Resource" uid="uid://stum0rvnvcrk" path="res://resources/Items/survival_book.tres" id="20_l71n6"]
+[ext_resource type="Resource" uid="uid://dtbc4fowv568k" path="res://resources/Items/spear.tres" id="21_ke2ow"]
+[ext_resource type="Resource" uid="uid://cpbrae4g133sh" path="res://resources/Items/match.tres" id="22_ujl30"]
+[ext_resource type="Resource" uid="uid://cx5eubxgvockq" path="res://resources/Items/beans_can.tres" id="23_31cv2"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_g2els"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_u8vuu"]
+albedo_color = Color(1, 1, 0.5647059, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_3vyb7"]
+material = SubResource("StandardMaterial3D_u8vuu")
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_qfm1y"]
+radius = 100.0
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_ur7pv"]
+radius = 200.0
+
+[node name="player" type="CharacterBody3D" groups=["player"]]
+script = ExtResource("1_y4r1p")
+
+[node name="playerCollision" type="CollisionShape3D" parent="."]
+unique_name_in_owner = true
+shape = SubResource("CapsuleShape3D_g2els")
+
+[node name="playerModel" type="MeshInstance3D" parent="."]
+unique_name_in_owner = true
+layers = 524288
+cast_shadow = 3
+mesh = SubResource("CapsuleMesh_3vyb7")
+
+[node name="PlayerHead" type="Node3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7445185, 0)
+
+[node name="yawPivot" type="Node3D" parent="PlayerHead"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1302762, 0)
+
+[node name="pitchPivot" type="Node3D" parent="PlayerHead/yawPivot"]
+unique_name_in_owner = true
+
+[node name="cameraBob" type="Node3D" parent="PlayerHead/yawPivot/pitchPivot"]
+unique_name_in_owner = true
+
+[node name="CharacterCamera3D" type="Camera3D" parent="PlayerHead/yawPivot/pitchPivot/cameraBob"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.059132278, -0.53104305)
+cull_mask = 1
+current = true
+fov = 90.0
+
+[node name="PlayerUICanvasLayer" type="CanvasLayer" parent="PlayerHead/yawPivot/pitchPivot/cameraBob/CharacterCamera3D"]
+unique_name_in_owner = true
+layer = 2
+
+[node name="EffectOverlay" parent="PlayerHead/yawPivot/pitchPivot/cameraBob/CharacterCamera3D/PlayerUICanvasLayer" instance=ExtResource("2_4r5pv")]
+
+[node name="GameUI" parent="PlayerHead/yawPivot/pitchPivot/cameraBob/CharacterCamera3D/PlayerUICanvasLayer" node_paths=PackedStringArray("Player", "Player_Interactor", "PlayerInventory") groups=["hud"] instance=ExtResource("2_g2els")]
+Player = NodePath("../../../../../../..")
+Player_Interactor = NodePath("../../../../../../../PlayerScriptsAttached/PlayerInteractor")
+PlayerInventory = NodePath("../../../../../../../PlayerScriptsAttached/Inventory")
+metadata/_edit_vertical_guides_ = [961.0]
+metadata/_edit_horizontal_guides_ = [540.0]
+
+[node name="DebugValues" parent="PlayerHead/yawPivot/pitchPivot/cameraBob/CharacterCamera3D/PlayerUICanvasLayer" node_paths=PackedStringArray("Player", "Player_raycast") instance=ExtResource("4_tuyoq")]
+z_index = 500
+Player = NodePath("../../../../../../..")
+Player_raycast = NodePath("../../../../ViewRayCast3D")
+
+[node name="WeaponsHolder" parent="PlayerHead/yawPivot/pitchPivot" groups=["weapon_holder"] instance=ExtResource("4_smehm")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.098443985, -0.06907374, -0.72854763)
+
+[node name="WeaponViewpointContainer" parent="PlayerHead/yawPivot/pitchPivot/WeaponsHolder" index="1" node_paths=PackedStringArray("PlayerCamera")]
+PlayerCamera = NodePath("../../cameraBob/CharacterCamera3D")
+
+[node name="SubViewport" parent="PlayerHead/yawPivot/pitchPivot/WeaponsHolder/WeaponViewpointContainer" index="0"]
+script = ExtResource("5_ur7pv")
+
+[node name="ViewRayCast3D" type="RayCast3D" parent="PlayerHead/yawPivot/pitchPivot"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0.0040255785, 0.048805058, 0)
+target_position = Vector3(0, -3, 0)
+collision_mask = 3
+script = ExtResource("5_tuyoq")
+
+[node name="PlayerScriptsAttached" type="Node" parent="."]
+
+[node name="PlayerHealth" type="Node3D" parent="PlayerScriptsAttached"]
+unique_name_in_owner = true
+script = ExtResource("7_qfm1y")
+
+[node name="PlayerFallDamage" type="Node3D" parent="PlayerScriptsAttached/PlayerHealth"]
+unique_name_in_owner = true
+script = ExtResource("8_fulsm")
+
+[node name="PlayerStats" type="Node3D" parent="PlayerScriptsAttached"]
+unique_name_in_owner = true
+script = ExtResource("9_4r5pv")
+
+[node name="PlayerNeeds" type="Node3D" parent="PlayerScriptsAttached"]
+unique_name_in_owner = true
+script = ExtResource("10_60mlk")
+
+[node name="PlayerInteractor" type="Node3D" parent="PlayerScriptsAttached" node_paths=PackedStringArray("Ray")]
+unique_name_in_owner = true
+script = ExtResource("6_smehm")
+Ray = NodePath("../../PlayerHead/yawPivot/pitchPivot/ViewRayCast3D")
+
+[node name="PlayerFootsteps" type="Node3D" parent="PlayerScriptsAttached"]
+unique_name_in_owner = true
+script = ExtResource("12_i4ail")
+
+[node name="PlayerHeadbob" type="Node3D" parent="PlayerScriptsAttached"]
+unique_name_in_owner = true
+script = ExtResource("5_qlg0r")
+CameraBobPath = NodePath("../../PlayerHead/yawPivot/pitchPivot/cameraBob")
+WalkBobPosAmplitude = 0.02
+SprintBobPosAmplitude = 0.08
+
+[node name="Inventory" type="Node3D" parent="PlayerScriptsAttached"]
+unique_name_in_owner = true
+script = ExtResource("7_fjrip")
+StartingItems = Array[ExtResource("16_l71n6")]([ExtResource("17_ke2ow"), ExtResource("18_ujl30"), ExtResource("19_31cv2"), ExtResource("20_l71n6"), ExtResource("21_ke2ow"), ExtResource("22_ujl30"), ExtResource("22_ujl30"), ExtResource("22_ujl30"), ExtResource("23_31cv2")])
+
+[node name="PlayerPush" type="Node3D" parent="PlayerScriptsAttached"]
+unique_name_in_owner = true
+script = ExtResource("15_a38lo")
+
+[node name="PlayerTemperature" type="Node3D" parent="PlayerScriptsAttached"]
+unique_name_in_owner = true
+script = ExtResource("16_4ni07")
+
+[node name="PlayerWaterHandler" type="Node3D" parent="PlayerScriptsAttached" node_paths=PackedStringArray("_player", "StatusOverlay")]
+unique_name_in_owner = true
+script = ExtResource("17_fulsm")
+_player = NodePath("../..")
+StatusOverlay = NodePath("../../PlayerHead/yawPivot/pitchPivot/cameraBob/CharacterCamera3D/PlayerUICanvasLayer/EffectOverlay")
+GroundRayStartHeight = 5.0
+GroundRayLength = 10.0
+ScaleFreezingEffectWithDepth = true
+
+[node name="Feet" type="Node3D" parent="."]
+
+[node name="ItemDetection" type="Node3D" parent="."]
+
+[node name="ItemDetectionArea3D" type="Area3D" parent="ItemDetection"]
+
+[node name="ItemDetectionCollisionShape3D" type="CollisionShape3D" parent="ItemDetection/ItemDetectionArea3D"]
+shape = SubResource("SphereShape3D_qfm1y")
+debug_color = Color(0.53793055, 0.5674657, 0.095035635, 0.41960785)
+
+[node name="DistantModelDetection" type="Node3D" parent="."]
+unique_name_in_owner = true
+script = ExtResource("10_y4r1p")
+
+[node name="DistantModelDetectionArea3D" type="Area3D" parent="DistantModelDetection"]
+unique_name_in_owner = true
+
+[node name="DistantModelDetectionCollisionShape3D" type="CollisionShape3D" parent="DistantModelDetection/DistantModelDetectionArea3D"]
+unique_name_in_owner = true
+shape = SubResource("SphereShape3D_ur7pv")
+
+[editable path="PlayerHead/yawPivot/pitchPivot/WeaponsHolder"]

@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3 uid="uid://byf0u80och56m"]
+
+[ext_resource type="Script" uid="uid://c63q3u6dydbgn" path="res://scripts/game/world/WaterBodyScript.cs" id="1_jihlx"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_jihlx"]
+resource_local_to_scene = true
+size = Vector2(40, 40)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_i3kw6"]
+resource_local_to_scene = true
+size = Vector3(40, 8, 40)
+
+[node name="WaterBody" type="Node3D"]
+script = ExtResource("1_jihlx")
+
+[node name="WaterVisualMeshInstance3D" type="MeshInstance3D" parent="."]
+unique_name_in_owner = true
+mesh = SubResource("PlaneMesh_jihlx")
+
+[node name="WaterArea3D" type="Area3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3, 0)
+
+[node name="WaterCollisionShape3D" type="CollisionShape3D" parent="WaterArea3D"]
+unique_name_in_owner = true
+shape = SubResource("BoxShape3D_i3kw6")
+
+[node name="WaterMarker3D" type="Marker3D" parent="."]
+unique_name_in_owner = true

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="Effect" load_steps=4 format=3 uid="uid://il45co74f50g"]
+
+[ext_resource type="Texture2D" uid="uid://cqevx01qw7ai3" path="res://gfx/UI/gameUI/effects/effect_tired_deadly.png" id="1_vghtd"]
+[ext_resource type="Script" uid="uid://bve4fsoq0q8pi" path="res://data/effect/EffectModifier.cs" id="2_r8vxc"]
+[ext_resource type="Script" uid="uid://bgqt0kdjsgsb2" path="res://data/effect/Effect.cs" id="3_fo85i"]
+
+[resource]
+script = ExtResource("3_fo85i")
+EffectSeverity = 3
+EffectName = "Delirious"
+Icon = ExtResource("1_vghtd")
+EffectDescription = "hgk m	o wah hmil sim egerum spleep ??"
+Type = 2
+metadata/_custom_type_script = "uid://bgqt0kdjsgsb2"

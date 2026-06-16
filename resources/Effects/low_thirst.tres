@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="Effect" load_steps=4 format=3 uid="uid://bdpxskjmc4yhb"]
+
+[ext_resource type="Texture2D" uid="uid://crvtafovstu7e" path="res://gfx/UI/gameUI/effects/effect_thirst_low.png" id="1_iemfy"]
+[ext_resource type="Script" uid="uid://bgqt0kdjsgsb2" path="res://data/effect/Effect.cs" id="1_pgxyb"]
+[ext_resource type="Script" uid="uid://bve4fsoq0q8pi" path="res://data/effect/EffectModifier.cs" id="2_cexr6"]
+
+[resource]
+script = ExtResource("1_pgxyb")
+EffectName = "Low Thirst"
+Icon = ExtResource("1_iemfy")
+EffectDescription = "I should watch my daily fluid intake."
+Type = 1
+metadata/_custom_type_script = "uid://bgqt0kdjsgsb2"

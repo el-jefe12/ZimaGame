@@ -1,0 +1,218 @@
+[gd_scene load_steps=11 format=3 uid="uid://csddblknjucmn"]
+
+[ext_resource type="Script" uid="uid://3s1ac64d5o5e" path="res://scripts/game/DebugValuesLogic.cs" id="1_6jphc"]
+[ext_resource type="Texture2D" uid="uid://boej1c4v5fbl" path="res://gfx/UI/gameUI/effects/effect_hunger_high.png" id="1_uougc"]
+[ext_resource type="Texture2D" uid="uid://b0v4eylktm6k1" path="res://gfx/UI/gameUI/BarEmpty.png" id="2_6jphc"]
+[ext_resource type="FontFile" uid="uid://tmjnu6qou2el" path="res://fonts/MONOFONT.TTF" id="2_ql743"]
+[ext_resource type="Texture2D" uid="uid://b37bpdfagxbv3" path="res://gfx/UI/gameUI/robinson_bar_UI_health_over.png" id="3_ql743"]
+[ext_resource type="Texture2D" uid="uid://sec4cye8urli" path="res://gfx/UI/gameUI/BlandBarColor.png" id="4_xowi8"]
+[ext_resource type="Texture2D" uid="uid://cghripmpecsf3" path="res://gfx/UI/gameUI/effects/effect_thirst_high.png" id="5_ni5bp"]
+[ext_resource type="Texture2D" uid="uid://dcef4op2jk03h" path="res://gfx/UI/gameUI/effects/effect_tired_high.png" id="6_8ktpd"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_frb5j"]
+
+[sub_resource type="Theme" id="Theme_xowi8"]
+RichTextLabel/colors/font_shadow_color = Color(0.03137255, 0.03137255, 0.03137255, 0.6313726)
+RichTextLabel/constants/shadow_offset_x = 2
+RichTextLabel/constants/shadow_offset_y = 2
+RichTextLabel/fonts/normal_font = ExtResource("2_ql743")
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchor_right = 0.24700001
+anchor_bottom = 0.30200002
+offset_right = 0.75997925
+offset_bottom = -0.16000366
+script = ExtResource("1_6jphc")
+
+[node name="ValuesPanelContainer" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.90500003
+offset_right = -418.915
+offset_bottom = -196.738
+theme_override_styles/panel = SubResource("StyleBoxEmpty_frb5j")
+
+[node name="MarginContainer" type="MarginContainer" parent="ValuesPanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ValuesPanelContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="FPSLabel" type="RichTextLabel" parent="ValuesPanelContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme = SubResource("Theme_xowi8")
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/normal_font_size = 40
+theme_override_font_sizes/bold_font_size = 26
+theme_override_font_sizes/bold_italics_font_size = 26
+theme_override_font_sizes/italics_font_size = 26
+theme_override_font_sizes/mono_font_size = 26
+bbcode_enabled = true
+text = "FPS: "
+fit_content = true
+vertical_alignment = 1
+
+[node name="HungerHBoxContainer" type="HBoxContainer" parent="ValuesPanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="HungerTextureRect" type="TextureRect" parent="ValuesPanelContainer/MarginContainer/VBoxContainer/HungerHBoxContainer"]
+custom_minimum_size = Vector2(25, 25)
+layout_mode = 2
+texture = ExtResource("1_uougc")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HungerTextureProgressBar" type="TextureProgressBar" parent="ValuesPanelContainer/MarginContainer/VBoxContainer/HungerHBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+value = 100.0
+texture_under = ExtResource("2_6jphc")
+texture_over = ExtResource("3_ql743")
+texture_progress = ExtResource("4_xowi8")
+tint_progress = Color(0.8203268, 0.3003052, 0.07152306, 1)
+
+[node name="HungerValueRichTextLabel" type="RichTextLabel" parent="ValuesPanelContainer/MarginContainer/VBoxContainer/HungerHBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+theme_override_colors/font_shadow_color = Color(0.03137255, 0.03137255, 0.03137255, 0.6313726)
+theme_override_fonts/normal_font = ExtResource("2_ql743")
+bbcode_enabled = true
+text = "0.0
+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ThirstHBoxContainer" type="HBoxContainer" parent="ValuesPanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ThirstTextureRect" type="TextureRect" parent="ValuesPanelContainer/MarginContainer/VBoxContainer/ThirstHBoxContainer"]
+custom_minimum_size = Vector2(25, 25)
+layout_mode = 2
+texture = ExtResource("5_ni5bp")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ThirstTextureProgressBar" type="TextureProgressBar" parent="ValuesPanelContainer/MarginContainer/VBoxContainer/ThirstHBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+value = 100.0
+texture_under = ExtResource("2_6jphc")
+texture_over = ExtResource("3_ql743")
+texture_progress = ExtResource("4_xowi8")
+tint_progress = Color(0.27993876, 0.630049, 0.759385, 1)
+
+[node name="ThirstValueRichTextLabel" type="RichTextLabel" parent="ValuesPanelContainer/MarginContainer/VBoxContainer/ThirstHBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+theme_override_colors/font_shadow_color = Color(0.03137255, 0.03137255, 0.03137255, 0.6313726)
+theme_override_fonts/normal_font = ExtResource("2_ql743")
+bbcode_enabled = true
+text = "0.0
+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TiredHBoxContainer" type="HBoxContainer" parent="ValuesPanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="TiredTextureRect" type="TextureRect" parent="ValuesPanelContainer/MarginContainer/VBoxContainer/TiredHBoxContainer"]
+custom_minimum_size = Vector2(25, 25)
+layout_mode = 2
+texture = ExtResource("6_8ktpd")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TiredTextureProgressBar" type="TextureProgressBar" parent="ValuesPanelContainer/MarginContainer/VBoxContainer/TiredHBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+value = 100.0
+texture_under = ExtResource("2_6jphc")
+texture_over = ExtResource("3_ql743")
+texture_progress = ExtResource("4_xowi8")
+tint_progress = Color(0.4269143, 0.31128025, 0.57896763, 1)
+
+[node name="TiredValueRichTextLabel" type="RichTextLabel" parent="ValuesPanelContainer/MarginContainer/VBoxContainer/TiredHBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+theme_override_colors/font_shadow_color = Color(0.03137255, 0.03137255, 0.03137255, 0.6313726)
+theme_override_fonts/normal_font = ExtResource("2_ql743")
+bbcode_enabled = true
+text = "0.0
+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ValuesPanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MoveStateLabel" type="RichTextLabel" parent="ValuesPanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 30)
+layout_mode = 2
+theme = SubResource("Theme_xowi8")
+theme_override_colors/font_shadow_color = Color(0.03137255, 0.03137255, 0.03137255, 0.6313726)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/normal_font_size = 16
+bbcode_enabled = true
+text = "MoveState:
+"
+fit_content = true
+
+[node name="GroundTypeLabel" type="RichTextLabel" parent="ValuesPanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 30)
+layout_mode = 2
+theme = SubResource("Theme_xowi8")
+theme_override_colors/font_shadow_color = Color(0.03137255, 0.03137255, 0.03137255, 0.6313726)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/normal_font_size = 16
+bbcode_enabled = true
+text = "GroundType:
+"
+fit_content = true
+
+[node name="LookingAtLabel" type="RichTextLabel" parent="ValuesPanelContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 30)
+layout_mode = 2
+theme = SubResource("Theme_xowi8")
+theme_override_colors/font_shadow_color = Color(0.03137255, 0.03137255, 0.03137255, 0.6313726)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/normal_font_size = 16
+bbcode_enabled = true
+text = "LookingAt:
+"
+fit_content = true
+
+[node name="PPosLabel" type="RichTextLabel" parent="ValuesPanelContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+theme = SubResource("Theme_xowi8")
+theme_override_colors/font_shadow_color = Color(0.03137255, 0.03137255, 0.03137255, 0.6313726)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/normal_font_size = 16
+bbcode_enabled = true
+text = "Position: x:0 y:0 z:0
+"
+vertical_alignment = 1

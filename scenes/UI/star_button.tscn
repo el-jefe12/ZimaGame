@@ -1,0 +1,50 @@
+[gd_scene load_steps=8 format=3 uid="uid://5cig8ndmwjv1"]
+
+[ext_resource type="Texture2D" uid="uid://b5or5rmvibwlq" path="res://gfx/UI/mainMenu/alaska_star.png" id="1_2vmoe"]
+[ext_resource type="Script" uid="uid://d0ckojtgrop37" path="res://scripts/UI/MainMenu/MainMenuButton.cs" id="1_c2cjg"]
+[ext_resource type="Texture2D" uid="uid://cclc5jkgftakd" path="res://gfx/UI/mainMenu/alaska_star_click.png" id="2_c2cjg"]
+[ext_resource type="Texture2D" uid="uid://bxkeebiyrg740" path="res://gfx/UI/mainMenu/alaska_star_hover.png" id="3_5vcs6"]
+[ext_resource type="Texture2D" uid="uid://xppctl8tvb72" path="res://gfx/UI/mainMenu/alaska_star_disabled.png" id="4_0jr5b"]
+[ext_resource type="FontFile" uid="uid://tmjnu6qou2el" path="res://fonts/MONOFONT.TTF" id="5_vtcpm"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_l7y7m"]
+
+[node name="StarButton" type="PanelContainer"]
+anchors_preset = -1
+anchor_right = 0.105000004
+anchor_bottom = 0.126
+offset_right = 0.3999939
+offset_bottom = -0.08000183
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_l7y7m")
+script = ExtResource("1_c2cjg")
+
+[node name="StarVBoxContainer" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+alignment = 1
+
+[node name="StarButtonTexture" type="TextureButton" parent="StarVBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+texture_normal = ExtResource("1_2vmoe")
+texture_pressed = ExtResource("2_c2cjg")
+texture_hover = ExtResource("3_5vcs6")
+texture_disabled = ExtResource("4_0jr5b")
+stretch_mode = 3
+
+[node name="StarLabel" type="RichTextLabel" parent="StarVBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/default_color = Color(0.99215686, 0.7137255, 0.039215688, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.36862746)
+theme_override_constants/shadow_outline_size = 5
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/normal_font = ExtResource("5_vtcpm")
+theme_override_font_sizes/normal_font_size = 25
+text = "New Game"
+fit_content = true
+horizontal_alignment = 1
+vertical_alignment = 1

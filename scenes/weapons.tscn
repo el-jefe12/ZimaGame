@@ -1,0 +1,217 @@
+[gd_scene load_steps=13 format=3 uid="uid://3iqnsh7wlndi"]
+
+[ext_resource type="Script" uid="uid://ccpswdi8wasf5" path="res://scripts/player/weapons/WeaponHolder.cs" id="1_jq0ys"]
+[ext_resource type="PackedScene" uid="uid://dge5s82ou32k6" path="res://models/player/tools/box_of_matches/matches.tscn" id="2_ka8gl"]
+[ext_resource type="Script" uid="uid://btdnrcaave28c" path="res://scripts/game/misc/WeaponCameraSync.cs" id="2_wfppc"]
+[ext_resource type="PackedScene" uid="uid://dbl7xe7sy63pf" path="res://models/player/tools/survival_book/survival_book.tscn" id="3_pe4jq"]
+[ext_resource type="PackedScene" uid="uid://bacrv272654oi" path="res://models/player/tools/knife/knife.tscn" id="4_0ccn8"]
+[ext_resource type="PackedScene" uid="uid://cj0kbq0vd75yo" path="res://models/player/items/bottle/water_bottle.tscn" id="5_oqpq1"]
+
+[sub_resource type="Animation" id="Animation_0ccn8"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("WeaponSocket:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0.4214561, -0.37461728, -0.49442077)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("WeaponSocket/knife:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0.108000666, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("WeaponSocket/knife:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(-0.067431256, -2.668017, 1.2402885)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("WeaponSocket:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0.08224339, -1.8342017, 0.015959036)]
+}
+
+[sub_resource type="Animation" id="Animation_ka8gl"]
+resource_name = "draw"
+length = 0.25
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("WeaponSocket:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0.4214561, -1.0352423, -0.49442077), Vector3(0.4214561, -0.37461728, -0.49442077)]
+}
+
+[sub_resource type="Animation" id="Animation_pe4jq"]
+resource_name = "holster"
+length = 0.25
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("WeaponSocket:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0.4214561, -0.37461728, -0.49442077), Vector3(0.4214561, -1.2715759, -0.49442077)]
+}
+
+[sub_resource type="Animation" id="Animation_oqpq1"]
+resource_name = "knife_attack"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("WeaponSocket:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.29821092, 0.4001798, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0.4214561, -0.37461728, -0.49442077), Vector3(0.4214561, -0.32988486, -0.46829242), Vector3(0.4214561, -0.46718773, -0.5434587), Vector3(0.4214561, -0.54255503, -0.53509724), Vector3(0.4214561, -0.5180969, -0.51454246), Vector3(0.4214561, -0.37461728, -0.49442077)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("WeaponSocket:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.29821092, 0.4001798, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0.08224339, -1.8342017, 0.015959036), Vector3(-0.040580522, -1.8435295, -0.42378268), Vector3(0.08381212, -1.8283643, 0.026669882), Vector3(0.16855267, -1.7856, 0.37494132), Vector3(0.17017879, -1.7807286, 0.3930169), Vector3(0.08224339, -1.8342017, 0.015959036)]
+}
+
+[sub_resource type="Animation" id="Animation_acacc"]
+resource_name = "knife_idle"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("WeaponSocket:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3, 0.6, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0.4214561, -0.37461728, -0.49442077), Vector3(0.4214561, -0.37461728, -0.49442077), Vector3(0.4214561, -0.37461728, -0.49442077), Vector3(0.4214561, -0.37461728, -0.49442077)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("WeaponSocket:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0.08224339, -1.8342017, 0.015959036)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_oqpq1"]
+_data = {
+&"RESET": SubResource("Animation_0ccn8"),
+&"draw": SubResource("Animation_ka8gl"),
+&"holster": SubResource("Animation_pe4jq"),
+&"knife_attack": SubResource("Animation_oqpq1"),
+&"knife_idle": SubResource("Animation_acacc")
+}
+
+[node name="Weapons" type="Node3D" node_paths=PackedStringArray("WeaponSocket")]
+script = ExtResource("1_jq0ys")
+WeaponSocket = NodePath("WeaponSocket")
+
+[node name="WeaponSocket" type="Node3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(-0.26160258, -0.075152054, -0.9622454, 0.015904417, 0.99649286, -0.0821507, 0.9650447, -0.03679478, -0.25948986, 0.4214561, -0.37461728, -0.49442077)
+
+[node name="matches" parent="WeaponSocket" instance=ExtResource("2_ka8gl")]
+transform = Transform3D(0.40545207, 0.90879595, 0.09848, -0.9087961, 0.38914004, 0.15053162, 0.09847999, -0.15053159, 0.9836878, 0.0656541, 0, -0.010874867)
+visible = false
+
+[node name="survival_book" parent="WeaponSocket" instance=ExtResource("3_pe4jq")]
+transform = Transform3D(0.25362927, 0.96587366, -0.05253689, -0.95294183, 0.2588191, 0.15784387, 0.16605474, 0.010030746, 0.98606545, 0, 0, 0)
+visible = false
+
+[node name="knife" parent="WeaponSocket" instance=ExtResource("4_0ccn8")]
+transform = Transform3D(-0.2597405, 0.851749, -0.4550345, 0.94372845, 0.3237855, 0.0673801, 0.20472503, -0.41192737, -0.88791984, 0, 0.108000666, 0)
+visible = false
+
+[node name="bottle" parent="WeaponSocket" instance=ExtResource("5_oqpq1")]
+transform = Transform3D(0.7232017, 0.020531446, -0.6903311, -0.015822496, 0.9997881, 0.013159227, 0.6904553, 0.0014059846, 0.7233734, 0.047337472, -0.14268142, -0.0014876425)
+visible = false
+
+[node name="WeaponViewpointContainer" type="SubViewportContainer" parent="." node_paths=PackedStringArray("WeaponCamera")]
+light_mask = 2
+visibility_layer = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+script = ExtResource("2_wfppc")
+WeaponCamera = NodePath("SubViewport/ItemCamera3D")
+
+[node name="SubViewport" type="SubViewport" parent="WeaponViewpointContainer"]
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(1920, 1080)
+render_target_update_mode = 4
+
+[node name="ItemCamera3D" type="Camera3D" parent="WeaponViewpointContainer/SubViewport"]
+unique_name_in_owner = true
+cull_mask = 2
+current = true
+fov = 90.0
+near = 0.01
+far = 10.0
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+layers = 2
+light_color = Color(0.9372549, 0.85882354, 0.7921569, 1)
+light_energy = 0.8
+shadow_enabled = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+unique_name_in_owner = true
+libraries = {
+&"": SubResource("AnimationLibrary_oqpq1")
+}

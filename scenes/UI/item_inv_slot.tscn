@@ -1,0 +1,148 @@
+[gd_scene load_steps=8 format=3 uid="uid://eoouomqba61r"]
+
+[ext_resource type="Script" uid="uid://huc7mna1vm6m" path="res://scripts/UI/InventoryItemSlot.cs" id="1_4lctc"]
+[ext_resource type="Texture2D" uid="uid://dgjhyu6fawvi5" path="res://gfx/UI/gameUI/effects/effect_overweight_low.png" id="1_lv6gq"]
+[ext_resource type="FontFile" uid="uid://tmjnu6qou2el" path="res://fonts/MONOFONT.TTF" id="2_m5sbx"]
+[ext_resource type="Script" uid="uid://0jp0b6q7q28j" path="res://scripts/game/misc/TextScroll.cs" id="3_m5sbx"]
+[ext_resource type="Texture2D" uid="uid://c21mb7mwv61ra" path="res://gfx/UI/gameUI/inventory/item_type/item_type_drink.png" id="4_m5sbx"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4lctc"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.8156863, 0.6784314, 0.40784314, 1)
+border_blend = true
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="Theme" id="Theme_wcj5n"]
+PanelContainer/styles/panel = SubResource("StyleBoxFlat_4lctc")
+
+[node name="InventoryItemSlot" type="PanelContainer"]
+clip_contents = true
+offset_right = 40.0
+offset_bottom = 40.0
+size_flags_horizontal = 3
+theme = SubResource("Theme_wcj5n")
+script = ExtResource("1_4lctc")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_stretch_ratio = 20.0
+mouse_filter = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="ItemIcon" type="TextureRect" parent="MarginContainer/HBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(25, 25)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("1_lv6gq")
+expand_mode = 1
+
+[node name="TextScroll" type="ScrollContainer" parent="MarginContainer/HBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(250, 20)
+layout_mode = 2
+mouse_filter = 2
+horizontal_scroll_mode = 3
+vertical_scroll_mode = 0
+script = ExtResource("3_m5sbx")
+
+[node name="ItemName" type="RichTextLabel" parent="MarginContainer/HBoxContainer/HBoxContainer/TextScroll"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.0
+mouse_filter = 2
+theme_override_fonts/normal_font = ExtResource("2_m5sbx")
+bbcode_enabled = true
+fit_content = true
+autowrap_mode = 0
+vertical_alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 10
+alignment = 2
+
+[node name="ItemHealth" type="RichTextLabel" parent="MarginContainer/HBoxContainer/HBoxContainer2"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_fonts/normal_font = ExtResource("2_m5sbx")
+bbcode_enabled = true
+text = "100"
+fit_content = true
+vertical_alignment = 1
+
+[node name="ItemAmount" type="RichTextLabel" parent="MarginContainer/HBoxContainer/HBoxContainer2"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 20)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_fonts/normal_font = ExtResource("2_m5sbx")
+bbcode_enabled = true
+text = "#1"
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ItemWeight" type="RichTextLabel" parent="MarginContainer/HBoxContainer/HBoxContainer2"]
+unique_name_in_owner = true
+clip_contents = false
+custom_minimum_size = Vector2(50, 20)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_fonts/normal_font = ExtResource("2_m5sbx")
+bbcode_enabled = true
+text = "20 kg"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/HBoxContainer/HBoxContainer2"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="ItemClass" type="TextureRect" parent="MarginContainer/HBoxContainer/HBoxContainer2/MarginContainer"]
+unique_name_in_owner = true
+clip_contents = true
+custom_minimum_size = Vector2(15, 15)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("4_m5sbx")
+expand_mode = 1

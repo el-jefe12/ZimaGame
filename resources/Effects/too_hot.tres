@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="Effect" load_steps=4 format=3 uid="uid://o0hvgbr2nckd"]
+
+[ext_resource type="Texture2D" uid="uid://b3113kyppv8o" path="res://gfx/UI/gameUI/effects/effect_too_hot.png" id="1_kthla"]
+[ext_resource type="Script" uid="uid://bve4fsoq0q8pi" path="res://data/effect/EffectModifier.cs" id="2_wikfb"]
+[ext_resource type="Script" uid="uid://bgqt0kdjsgsb2" path="res://data/effect/Effect.cs" id="3_fw7at"]
+
+[resource]
+script = ExtResource("3_fw7at")
+EffectSeverity = 2
+EffectName = "High Temperature"
+Icon = ExtResource("1_kthla")
+EffectDescription = "I'm boiling!"
+Type = 3
+metadata/_custom_type_script = "uid://bgqt0kdjsgsb2"

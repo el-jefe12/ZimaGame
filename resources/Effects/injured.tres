@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="Effect" load_steps=4 format=3 uid="uid://bfk07gksypo5h"]
+
+[ext_resource type="Texture2D" uid="uid://br8o111hqqjp1" path="res://gfx/UI/gameUI/effects/effect_injured.png" id="1_oaxmd"]
+[ext_resource type="Script" uid="uid://bgqt0kdjsgsb2" path="res://data/effect/Effect.cs" id="1_vxsx5"]
+[ext_resource type="Script" uid="uid://bve4fsoq0q8pi" path="res://data/effect/EffectModifier.cs" id="2_ndhjo"]
+
+[resource]
+script = ExtResource("1_vxsx5")
+EffectName = "Injury"
+Icon = ExtResource("1_oaxmd")
+EffectDescription = "Now I've done it! Ow ow! I need to heal myself quick."
+Type = 4
+metadata/_custom_type_script = "uid://bgqt0kdjsgsb2"

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="OpenAction" load_steps=3 format=3 uid="uid://dehr5dvb7rexv"]
+
+[ext_resource type="PackedScene" uid="uid://bh648v4qrkvhl" path="res://scenes/UI/survival_book_UI.tscn" id="1_7hnkc"]
+[ext_resource type="Script" uid="uid://bbmfwdu1wfcvd" path="res://data/ItemActions/OpenAction.cs" id="1_mk4q1"]
+
+[resource]
+script = ExtResource("1_mk4q1")
+OpenScene = ExtResource("1_7hnkc")
+ActionName = "Open"
+InputActionName = "game_use_item_mid"
+metadata/_custom_type_script = "uid://bbmfwdu1wfcvd"

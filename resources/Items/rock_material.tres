@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="Item" load_steps=5 format=3 uid="uid://yt6ax8ipa05j"]
+
+[ext_resource type="Script" uid="uid://2ofxdkbacdjx" path="res://data/ItemAction.cs" id="1_r1awm"]
+[ext_resource type="Texture2D" uid="uid://vpq00bnbfmk4" path="res://gfx/UI/gameUI/effects/effect_too_cold.png" id="2_6lyfv"]
+[ext_resource type="Script" uid="uid://m2f7h5b81nkv" path="res://data/Item.cs" id="2_fstlp"]
+[ext_resource type="PackedScene" uid="uid://c6whxk41qttd4" path="res://models/player/items/materials/rock/rock.tscn" id="3_82swl"]
+
+[resource]
+script = ExtResource("2_fstlp")
+ItemName = "Stone"
+WorldModel = ExtResource("3_82swl")
+Icon = ExtResource("2_6lyfv")
+ModelPosition = Vector3(0.047, -0.1, -0.001)
+Item_Type = 2
+Item_SubType = 5
+ItemWeight = 2.0
+metadata/_custom_type_script = "uid://m2f7h5b81nkv"

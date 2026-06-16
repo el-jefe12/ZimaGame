@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=3 uid="uid://b3sfdarrqhye"]
+
+[ext_resource type="Script" uid="uid://crfqyi27au7gj" path="res://scripts/player/item/WorldItem.cs" id="1_iw0db"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_284j5"]
+radius = 1.5
+
+[node name="Item" type="RigidBody3D" node_paths=PackedStringArray("ItemDetectArea3D")]
+collision_layer = 2
+collision_mask = 3
+continuous_cd = true
+contact_monitor = true
+max_contacts_reported = 4
+script = ExtResource("1_iw0db")
+ItemDetectArea3D = NodePath("ItemDetectArea3D")
+
+[node name="ModelRoot" type="Node3D" parent="."]
+unique_name_in_owner = true
+
+[node name="ItemDetectArea3D" type="Area3D" parent="."]
+unique_name_in_owner = true
+
+[node name="ItemDetectCollisionShape3D" type="CollisionShape3D" parent="ItemDetectArea3D"]
+shape = SubResource("SphereShape3D_284j5")
+
+[node name="Marker3D" type="Marker3D" parent="."]

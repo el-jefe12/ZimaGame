@@ -1,0 +1,14 @@
+[gd_resource type="StandardMaterial3D" load_steps=3 format=3 uid="uid://cg7otjl5mxysf"]
+
+[ext_resource type="Texture2D" uid="uid://cpa7mx865iery" path="res://models/foliage/tree/tree_test_pine_bark_diff_512.png" id="1_bycyj"]
+[ext_resource type="Texture2D" uid="uid://cyue7ini50k08" path="res://models/foliage/tree/tree_test_pine_bark_nor_gl_512.png" id="2_te85f"]
+
+[resource]
+resource_name = "bark"
+cull_mode = 2
+specular_mode = 2
+disable_specular_occlusion = true
+albedo_texture = ExtResource("1_bycyj")
+normal_enabled = true
+normal_scale = 0.6
+normal_texture = ExtResource("2_te85f")

@@ -1,0 +1,68 @@
+[gd_scene load_steps=14 format=3 uid="uid://bncs14wwd0a3s"]
+
+[ext_resource type="PackedScene" uid="uid://dxbgqllnn0xx8" path="res://scenes/player.tscn" id="1_errlg"]
+[ext_resource type="Texture2D" uid="uid://dpef4litrb3qm" path="res://gfx/UI/mainMenu/mainmenuBG.png" id="1_iyx0m"]
+[ext_resource type="Script" uid="uid://pimndjs2av1h" path="res://scripts/player/player_effects/EffectListScript.cs" id="2_bl13t"]
+[ext_resource type="Texture2D" uid="uid://cv8e3oqdqu18b" path="res://gfx/textures/sky/kloofendal_38d_partly_cloudy_puresky_1k.exr" id="4_74lek"]
+[ext_resource type="PackedScene" uid="uid://b3sfdarrqhye" path="res://scenes/items/Item.tscn" id="5_at5dv"]
+[ext_resource type="PackedScene" uid="uid://cp78k6pteugx6" path="res://models/foliage/tree/tree_test2.tscn" id="5_j5jx5"]
+[ext_resource type="Resource" uid="uid://w70e7n8npycj" path="res://resources/Items/knife.tres" id="6_jcd4p"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_74lek"]
+albedo_color = Color(0.866314, 0.57852393, 0.46888578, 1)
+albedo_texture = ExtResource("1_iyx0m")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_bl13t"]
+material = SubResource("StandardMaterial3D_74lek")
+size = Vector2(200, 200)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_iyx0m"]
+custom_solver_bias = 0.1
+size = Vector3(200, 0, 200)
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_j5jx5"]
+panorama = ExtResource("4_74lek")
+
+[sub_resource type="Sky" id="Sky_lpvoh"]
+sky_material = SubResource("PanoramaSkyMaterial_j5jx5")
+
+[sub_resource type="Environment" id="Environment_bl13t"]
+background_mode = 2
+sky = SubResource("Sky_lpvoh")
+ambient_light_color = Color(0.82943624, 0.7033974, 0.64299643, 1)
+
+[node name="TestMap" type="Node3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("PlaneMesh_bl13t")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/StaticBody3D"]
+shape = SubResource("BoxShape3D_iyx0m")
+
+[node name="player" parent="." instance=ExtResource("1_errlg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="EffectList" type="Node3D" parent="."]
+script = ExtResource("2_bl13t")
+EffectsFolder = "res://resources/Effects"
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_bl13t")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.106107935, -0.9943546, 0, 0.49717727, 0.053053964, 0.86602545, -0.8611364, -0.091892175, 0.49999997, 0, 47.689407, 0)
+light_color = Color(0.8902411, 0.7810668, 0.65554047, 1)
+light_energy = 0.7
+shadow_enabled = true
+
+[node name="Item" parent="." instance=ExtResource("5_at5dv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.929836, -3.7731357)
+ItemDefinitionRaw = ExtResource("6_jcd4p")
+
+[node name="tree_test" parent="." instance=ExtResource("5_j5jx5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8738866, -1.1920929e-07, -15.546999)
+
+[editable path="player"]
+[editable path="player/PlayerHead/yawPivot/pitchPivot/WeaponsHolder"]

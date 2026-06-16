@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="Effect" load_steps=4 format=3 uid="uid://cf0fqn3ilrdxo"]
+
+[ext_resource type="Texture2D" uid="uid://vpq00bnbfmk4" path="res://gfx/UI/gameUI/effects/effect_too_cold.png" id="1_fdtnr"]
+[ext_resource type="Script" uid="uid://bgqt0kdjsgsb2" path="res://data/effect/Effect.cs" id="1_q10w2"]
+[ext_resource type="Script" uid="uid://bve4fsoq0q8pi" path="res://data/effect/EffectModifier.cs" id="2_7eg28"]
+
+[resource]
+script = ExtResource("1_q10w2")
+EffectName = "Low Temperature"
+Icon = ExtResource("1_fdtnr")
+EffectDescription = "I'm freezing to death here."
+Type = 3
+metadata/_custom_type_script = "uid://bgqt0kdjsgsb2"

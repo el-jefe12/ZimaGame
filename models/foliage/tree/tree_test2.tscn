@@ -1,0 +1,54 @@
+[gd_scene load_steps=10 format=3 uid="uid://cp78k6pteugx6"]
+
+[ext_resource type="ArrayMesh" uid="uid://d3xedsilrbfla" path="res://models/foliage/tree/tree_test_body.res" id="1_ok5m6"]
+[ext_resource type="Script" uid="uid://bgqoglei7mu26" path="res://scripts/game/tree/DamageableTree.cs" id="1_vxfbs"]
+[ext_resource type="Resource" uid="uid://yt6ax8ipa05j" path="res://resources/Items/rock_material.tres" id="2_ptcv5"]
+[ext_resource type="ArrayMesh" uid="uid://ccqmb3u8061ki" path="res://models/foliage/tree/tree_test_stump.res" id="2_vxfbs"]
+[ext_resource type="ArrayMesh" uid="uid://dknekiq8s4tin" path="res://models/foliage/tree/tree_test_tree_branch.res" id="3_ok5m6"]
+[ext_resource type="Script" uid="uid://bhwlg0gy07twj" path="res://scripts/game/objects/Damageable.cs" id="5_x80en"]
+[ext_resource type="Script" uid="uid://ymdtytcsekcn" path="res://scripts/game/objects/WorldItemDropper.cs" id="6_g2733"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_x80en"]
+height = 15.0
+radius = 0.6
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_g0n1b"]
+height = 0.65
+radius = 0.6
+
+[node name="tree_test" type="Node3D"]
+script = ExtResource("1_vxfbs")
+DamageablePath = NodePath("Damageable")
+DropperPath = NodePath("ItemDropper")
+
+[node name="Damageable" type="Node3D" parent="."]
+script = ExtResource("5_x80en")
+
+[node name="ItemDropper" type="Node3D" parent="."]
+script = ExtResource("6_g2733")
+DropItemDefinitionRaw = ExtResource("2_ptcv5")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+
+[node name="tree_full" type="MeshInstance3D" parent="StaticBody3D"]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0.5, 0)
+mesh = ExtResource("1_ok5m6")
+skeleton = NodePath("")
+
+[node name="tree_branch" type="MeshInstance3D" parent="StaticBody3D/tree_full"]
+transform = Transform3D(0.557286, -0.1041466, -0.10549314, -0.0013882081, -1.1108989, 0.50004584, -0.07856147, -0.71914756, -0.7571654, -0.0005729368, 30.323492, 0.020369787)
+mesh = ExtResource("3_ok5m6")
+skeleton = NodePath("")
+
+[node name="BodyCollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.185556, 0)
+shape = SubResource("CylinderShape3D_x80en")
+
+[node name="tree_stump" type="MeshInstance3D" parent="StaticBody3D"]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0.5, 0)
+mesh = ExtResource("2_vxfbs")
+skeleton = NodePath("")
+
+[node name="StumpCollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.34886998, 0)
+shape = SubResource("CylinderShape3D_g0n1b")

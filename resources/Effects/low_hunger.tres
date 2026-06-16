@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="Effect" load_steps=3 format=3 uid="uid://cv7vma50gmvch"]
+
+[ext_resource type="Texture2D" uid="uid://c53kbmcoom8r5" path="res://gfx/UI/gameUI/effects/effect_hunger_low.png" id="1_1r00s"]
+[ext_resource type="Script" uid="uid://bgqt0kdjsgsb2" path="res://data/effect/Effect.cs" id="1_88ufj"]
+
+[resource]
+script = ExtResource("1_88ufj")
+EffectName = "Peckish"
+Icon = ExtResource("1_1r00s")
+EffectDescription = "I feel quite hungry."
+type = "hunger"
+metadata/_custom_type_script = "uid://bgqt0kdjsgsb2"

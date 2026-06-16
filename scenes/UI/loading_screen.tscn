@@ -1,0 +1,147 @@
+[gd_scene load_steps=7 format=3 uid="uid://dw1p5abmdpbob"]
+
+[ext_resource type="Script" uid="uid://o3ahw41ib57n" path="res://scripts/UI/loadingScreenLogic.cs" id="1_7uno8"]
+[ext_resource type="Texture2D" uid="uid://dpjhx267pvqxy" path="res://gfx/UI/loadingScreen/loadingScreen.png" id="1_85qbq"]
+[ext_resource type="Texture2D" uid="uid://rfmrtfeu381p" path="res://gfx/UI/loadingScreen/loadingScreenBar.png" id="2_7uno8"]
+[ext_resource type="Texture2D" uid="uid://bqhvuhup4scxo" path="res://gfx/UI/loadingScreen/loadingScreenBarOver.png" id="3_4x40i"]
+[ext_resource type="Texture2D" uid="uid://6k2dprg1kyao" path="res://gfx/UI/loadingScreen/loadingScreenBarFill.png" id="4_oheac"]
+[ext_resource type="FontFile" uid="uid://tmjnu6qou2el" path="res://fonts/MONOFONT.TTF" id="6_4x40i"]
+
+[node name="LoadingScreen" type="Control"]
+z_index = 4096
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_7uno8")
+TargetScenePath = "uid://b562tptc77ge7"
+
+[node name="LoadingScreenBackground" type="TextureRect" parent="."]
+z_index = 800
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_85qbq")
+
+[node name="LoadingScreenLoadingBar" type="TextureProgressBar" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.055000003
+anchor_top = 0.89800006
+anchor_right = 0.94500005
+anchor_bottom = 0.95000005
+offset_left = 0.3999939
+offset_top = 0.15991211
+offset_right = -0.40014648
+grow_horizontal = 2
+grow_vertical = 0
+texture_under = ExtResource("2_7uno8")
+texture_over = ExtResource("3_4x40i")
+texture_progress = ExtResource("4_oheac")
+tint_progress = Color(1.3716713, 0.74897975, 0, 1)
+
+[node name="SurvivalTipRichTextLabel" type="RichTextLabel" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.39600003
+anchor_top = 0.60700005
+anchor_right = 0.60400003
+anchor_bottom = 0.68700004
+offset_left = 0.17993164
+offset_top = -0.060058594
+offset_right = -0.18005371
+offset_bottom = 0.539978
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/normal_font = ExtResource("6_4x40i")
+theme_override_font_sizes/normal_font_size = 54
+theme_override_font_sizes/bold_font_size = 16
+theme_override_font_sizes/bold_italics_font_size = 16
+theme_override_font_sizes/italics_font_size = 16
+theme_override_font_sizes/mono_font_size = 16
+bbcode_enabled = true
+text = "Survival Tip #67"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SurvivalTextRichTextLabel" type="RichTextLabel" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.055000003
+anchor_top = 0.688
+anchor_right = 0.94500005
+anchor_bottom = 0.86200005
+offset_left = 0.3999939
+offset_top = -0.040039063
+offset_right = -0.40014648
+offset_bottom = 0.039978027
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/normal_font = ExtResource("6_4x40i")
+theme_override_font_sizes/normal_font_size = 36
+theme_override_font_sizes/bold_font_size = 26
+theme_override_font_sizes/bold_italics_font_size = 26
+theme_override_font_sizes/italics_font_size = 26
+theme_override_font_sizes/mono_font_size = 26
+bbcode_enabled = true
+text = "This is where the survival tip will be displayed. So for example it will talk about how to start a fire, what needs to be aquired for it etc. Don't forget to replace this text so it actually shows something useful and not this. also dont forget to switch the font for something better. This text will probably be randomly picked from a .txt list or something idk yet. I won't make many of them but a few for sure."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LoadingInfoRichTextLabel" type="RichTextLabel" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.055000003
+anchor_top = 0.95000005
+anchor_right = 0.94000006
+anchor_bottom = 0.984
+offset_left = 0.3999939
+offset_right = 0.19995117
+offset_bottom = 0.2800293
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/normal_font_size = 16
+theme_override_font_sizes/bold_font_size = 16
+theme_override_font_sizes/bold_italics_font_size = 16
+theme_override_font_sizes/italics_font_size = 16
+theme_override_font_sizes/mono_font_size = 16
+bbcode_enabled = true
+text = "(0%) loading info"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="PressAnyButtonRichTextLabel" type="RichTextLabel" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.32200003
+anchor_top = 0.87200004
+anchor_right = 0.67800003
+anchor_bottom = 0.97400004
+offset_left = -0.24005127
+offset_top = 0.2399292
+offset_right = 0.5600586
+offset_bottom = 0.079956055
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/normal_font_size = 32
+theme_override_font_sizes/bold_font_size = 16
+theme_override_font_sizes/bold_italics_font_size = 16
+theme_override_font_sizes/italics_font_size = 16
+theme_override_font_sizes/mono_font_size = 16
+bbcode_enabled = true
+text = "[pulse freq=1.0 color=#ffffff40 ease=-2.0]Press any button to continue[/pulse]"
+horizontal_alignment = 1
+vertical_alignment = 1

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="Item" load_steps=5 format=3 uid="uid://cpbrae4g133sh"]
+
+[ext_resource type="Script" uid="uid://2ofxdkbacdjx" path="res://data/ItemAction.cs" id="1_t7o88"]
+[ext_resource type="Script" uid="uid://m2f7h5b81nkv" path="res://data/Item.cs" id="2_6wo6t"]
+[ext_resource type="Texture2D" uid="uid://q7b8c2h2gjlp" path="res://gfx/UI/gameUI/robinson_info_button.png" id="2_w1otl"]
+[ext_resource type="PackedScene" uid="uid://dtb2jo2y6ahw7" path="res://models/player/tools/box_of_matches/match.tscn" id="3_w1otl"]
+
+[resource]
+script = ExtResource("2_6wo6t")
+ItemName = "Safety Match"
+WorldModel = ExtResource("3_w1otl")
+Icon = ExtResource("2_w1otl")
+ModelPosition = Vector3(0.0656541, 0, -0.010874867)
+Item_Type = 2
+Item_SubType = 4
+metadata/_custom_type_script = "uid://m2f7h5b81nkv"

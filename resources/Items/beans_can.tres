@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="Item" load_steps=7 format=3 uid="uid://cx5eubxgvockq"]
+
+[ext_resource type="Script" uid="uid://m2f7h5b81nkv" path="res://data/Item.cs" id="1_lblgf"]
+[ext_resource type="Script" uid="uid://2ofxdkbacdjx" path="res://data/ItemAction.cs" id="1_uxuh8"]
+[ext_resource type="Resource" uid="uid://b0x6xdcnchuar" path="res://resources/Items/ItemsActions/EatActions/EatAction_can_of_beans.tres" id="2_qhrdt"]
+[ext_resource type="PackedScene" uid="uid://crrqvmpfow5mh" path="res://models/player/items/can/tin_can.tscn" id="2_ryfoj"]
+[ext_resource type="Resource" uid="uid://c6ui12k3b11yl" path="res://resources/Items/ItemValues/can_of_beans_values.tres" id="3_lnljh"]
+[ext_resource type="Texture2D" uid="uid://dpp7f26p3mqwd" path="res://gfx/UI/gameUI/inventory/item_icon/item_food_test.png" id="4_lnljh"]
+
+[resource]
+script = ExtResource("1_lblgf")
+ItemName = "Can of Beans"
+WorldModel = ExtResource("2_ryfoj")
+Icon = ExtResource("4_lnljh")
+ModelPosition = Vector3(0.047, -0.05, -0.001)
+ModelRotation = Vector3(0, 57.4, 0)
+Item_SubType = 1
+ItemWeight = 2.0
+ConsumableData = ExtResource("3_lnljh")
+Actions = Array[ExtResource("1_uxuh8")]([ExtResource("2_qhrdt")])
+metadata/_custom_type_script = "uid://m2f7h5b81nkv"

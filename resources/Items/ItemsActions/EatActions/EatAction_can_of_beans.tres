@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="EatAction" load_steps=2 format=3 uid="uid://b0x6xdcnchuar"]
+
+[ext_resource type="Script" uid="uid://bt70riaon7p71" path="res://data/ItemActions/EatAction.cs" id="1_tvsyh"]
+
+[resource]
+script = ExtResource("1_tvsyh")
+HoldRequired = true
+metadata/_custom_type_script = "uid://bt70riaon7p71"

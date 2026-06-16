@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="Effect" load_steps=3 format=3 uid="uid://cdjlndudbausy"]
+
+[ext_resource type="Texture2D" uid="uid://boej1c4v5fbl" path="res://gfx/UI/gameUI/effects/effect_hunger_high.png" id="1_465ui"]
+[ext_resource type="Script" uid="uid://bgqt0kdjsgsb2" path="res://data/effect/Effect.cs" id="1_wrfvs"]
+
+[resource]
+script = ExtResource("1_wrfvs")
+EffectSeverity = 2
+EffectName = "Very Hungry"
+Icon = ExtResource("1_465ui")
+EffectDescription = "The hunger is almost unbearable. My stomach feels like it will start eating itself soon. The lack of nutrition leaves me very tired and sickly."
+type = "hunger"
+metadata/_custom_type_script = "uid://bgqt0kdjsgsb2"

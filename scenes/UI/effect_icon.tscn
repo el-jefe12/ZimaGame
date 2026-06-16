@@ -1,0 +1,29 @@
+[gd_scene load_steps=3 format=3 uid="uid://cpoyvan7ovi"]
+
+[ext_resource type="Texture2D" uid="uid://dm4ufr5k1ylnt" path="res://gfx/UI/gameUI/effects/effect_buff_tea.png" id="1_6erit"]
+[ext_resource type="Script" uid="uid://0j4011mldoe6" path="res://scripts/player/player_effects/EffectIconLogic.cs" id="1_wuyle"]
+
+[node name="EffectIcon" type="Control"]
+process_mode = 3
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1880.0
+offset_bottom = -1040.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_wuyle")
+
+[node name="EffectIconTexture" type="TextureRect" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_6erit")
+expand_mode = 1

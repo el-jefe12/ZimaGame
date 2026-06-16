@@ -1,0 +1,10 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://dj2txg3l3oumd"]
+
+[ext_resource type="FontFile" uid="uid://1ap2sma0hofv" path="res://fonts/ChildWriting-Regular.ttf" id="1_ftppr"]
+
+[resource]
+RichTextLabel/colors/default_color = Color(0.6163461, 0.22776994, 0.09241185, 1)
+RichTextLabel/font_sizes/bold_font_size = 26
+RichTextLabel/font_sizes/normal_font_size = 26
+RichTextLabel/fonts/bold_font = ExtResource("1_ftppr")
+RichTextLabel/fonts/normal_font = ExtResource("1_ftppr")

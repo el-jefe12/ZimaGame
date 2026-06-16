@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="QuitGameMenuAction" load_steps=2 format=3 uid="uid://5g1ni6j2r0u"]
+
+[ext_resource type="Script" uid="uid://cimu34lseax7v" path="res://data/Menu/QuitGameMenuAction.cs" id="1_wot1w"]
+
+[resource]
+script = ExtResource("1_wot1w")
+ActionName = "Quit Game"
+metadata/_custom_type_script = "uid://cimu34lseax7v"

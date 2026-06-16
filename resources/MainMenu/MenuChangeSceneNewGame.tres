@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="ChangeSceneMenuAction" load_steps=2 format=3 uid="uid://c3i6pk6ph8p02"]
+
+[ext_resource type="Script" uid="uid://cpg8fmk2nxisr" path="res://data/Menu/ChangeSceneMenuAction.cs" id="1_7faho"]
+
+[resource]
+script = ExtResource("1_7faho")
+ScenePath = "uid://b562tptc77ge7"
+LoadingScreenPath = "uid://dw1p5abmdpbob"
+metadata/_custom_type_script = "uid://cpg8fmk2nxisr"

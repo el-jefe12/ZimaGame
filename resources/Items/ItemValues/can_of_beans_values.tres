@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemConsumableData" load_steps=2 format=3 uid="uid://c6ui12k3b11yl"]
+
+[ext_resource type="Script" uid="uid://br80uyualra4s" path="res://data/ItemConsumableData.cs" id="1_jnr7t"]
+
+[resource]
+script = ExtResource("1_jnr7t")
+HealthRestore = 4.5
+HungerRestore = 41.0
+ThirstRestore = 8.0
+TiredRestore = -0.7
+metadata/_custom_type_script = "uid://br80uyualra4s"

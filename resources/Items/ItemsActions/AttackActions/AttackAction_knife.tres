@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="AttackAction" load_steps=2 format=3 uid="uid://bp4jl2m5gxmlt"]
+
+[ext_resource type="Script" uid="uid://cbhkf2fbp326w" path="res://data/ItemActions/AttackAction.cs" id="1_j42kb"]
+
+[resource]
+script = ExtResource("1_j42kb")
+AnimationPlayerPath = NodePath("PlayerHead/yawPivot/pitchPivot/WeaponsHolder/AnimationPlayer")
+AttackRaycastPath = NodePath("PlayerHead/yawPivot/pitchPivot/ViewRayCast3D")
+InputActionName = "game_attack"
+metadata/_custom_type_script = "uid://cbhkf2fbp326w"

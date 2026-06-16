@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="Effect" load_steps=4 format=3 uid="uid://vt7l15f5suuy"]
+
+[ext_resource type="Texture2D" uid="uid://cghripmpecsf3" path="res://gfx/UI/gameUI/effects/effect_thirst_high.png" id="1_5qsr1"]
+[ext_resource type="Script" uid="uid://bgqt0kdjsgsb2" path="res://data/effect/Effect.cs" id="1_dx5xt"]
+[ext_resource type="Script" uid="uid://bve4fsoq0q8pi" path="res://data/effect/EffectModifier.cs" id="2_eru8a"]
+
+[resource]
+script = ExtResource("1_dx5xt")
+EffectSeverity = 2
+EffectName = "Very Thristy"
+Icon = ExtResource("1_5qsr1")
+EffectDescription = "My throat feels so dry. It feels like it's turning to sand. This is unbearable."
+Type = 1
+metadata/_custom_type_script = "uid://bgqt0kdjsgsb2"

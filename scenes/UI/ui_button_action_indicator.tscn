@@ -1,0 +1,115 @@
+[gd_scene load_steps=12 format=3 uid="uid://b5uqe4sx2qt8p"]
+
+[ext_resource type="Texture2D" uid="uid://ddmapffqrilfr" path="res://gfx/UI/gameUI/button_image_base.png" id="1_14rx6"]
+[ext_resource type="Script" uid="uid://bh3748kjvbuqa" path="res://scripts/UI/buttonActionIndicatorLogic.cs" id="1_67ayp"]
+[ext_resource type="Texture2D" uid="uid://bxxdmwlasesfn" path="res://gfx/UI/gameUI/button_image_base_long.png" id="3_c5ov2"]
+[ext_resource type="FontFile" uid="uid://bxtibxtyb8hdo" path="res://fonts/Applespice-BOa3.ttf" id="3_k500d"]
+[ext_resource type="Texture2D" uid="uid://dxl824qvvdhel" path="res://gfx/UI/gameUI/action_indicator_texture_prompts/action_indicator_enter.png" id="5_8cflt"]
+[ext_resource type="FontFile" uid="uid://tmjnu6qou2el" path="res://fonts/MONOFONT.TTF" id="5_eba8s"]
+[ext_resource type="Texture2D" uid="uid://vvme5vyv3xwx" path="res://gfx/UI/gameUI/action_indicator_progress_bar_small_test.png" id="6_u4733"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_67ayp"]
+
+[sub_resource type="Theme" id="Theme_k500d"]
+PanelContainer/styles/panel = SubResource("StyleBoxEmpty_67ayp")
+
+[sub_resource type="Theme" id="Theme_67ayp"]
+RichTextLabel/colors/default_color = Color(0.8795448, 0.75494087, 0.49773836, 1)
+RichTextLabel/font_sizes/bold_font_size = 28
+RichTextLabel/font_sizes/bold_italics_font_size = 28
+RichTextLabel/font_sizes/italics_font_size = 28
+RichTextLabel/font_sizes/mono_font_size = 28
+RichTextLabel/font_sizes/normal_font_size = 26
+RichTextLabel/fonts/normal_font = ExtResource("3_k500d")
+
+[sub_resource type="Theme" id="Theme_c5ov2"]
+RichTextLabel/colors/default_color = Color(1, 1, 1, 1)
+RichTextLabel/font_sizes/normal_font_size = 22
+RichTextLabel/fonts/normal_font = ExtResource("5_eba8s")
+
+[node name="ButtonAction" type="PanelContainer"]
+anchors_preset = -1
+anchor_right = 0.136
+anchor_bottom = 0.030000001
+offset_right = 0.87997437
+offset_bottom = -0.40000153
+theme = SubResource("Theme_k500d")
+script = ExtResource("1_67ayp")
+InputActionName = &""
+ButtonBase = ExtResource("1_14rx6")
+ButtonBaseLong = ExtResource("3_c5ov2")
+ButtonActionRichTextLabel = "Action Names"
+
+[node name="ButtonActionHBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ButtonIconBase" type="TextureRect" parent="ButtonActionHBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+texture = ExtResource("1_14rx6")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ButtonRichTextLabel" type="RichTextLabel" parent="ButtonActionHBoxContainer/ButtonIconBase"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_67ayp")
+bbcode_enabled = true
+text = "E"
+fit_content = true
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ButtonIconPrompt" type="TextureRect" parent="ButtonActionHBoxContainer/ButtonIconBase"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = 28.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("5_8cflt")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HeldTextureProgressBar" type="TextureProgressBar" parent="ButtonActionHBoxContainer/ButtonIconBase"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.75000006
+anchor_right = 1.0
+anchor_bottom = 1.156
+offset_bottom = 0.00799942
+grow_horizontal = 2
+grow_vertical = 0
+texture_under = ExtResource("6_u4733")
+texture_progress = ExtResource("6_u4733")
+tint_under = Color(0.7403998, 0.736094, 0.73609227, 1)
+
+[node name="ButtonActionRichTextLabel" type="RichTextLabel" parent="ButtonActionHBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 32)
+layout_mode = 2
+theme = SubResource("Theme_c5ov2")
+theme_override_colors/default_color = Color(0.8165957, 0.6799844, 0.40820768, 1)
+theme_override_colors/font_selected_color = Color(0.7490196, 0.61960787, 0.34901962, 1)
+theme_override_colors/font_shadow_color = Color(0.03137255, 0.03137255, 0.03137255, 0.6313726)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+bbcode_enabled = true
+text = "Action Names"
+fit_content = true
+scroll_active = false
+vertical_alignment = 1

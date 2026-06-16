@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="Effect" load_steps=4 format=3 uid="uid://lqvpdxtpihm3"]
+
+[ext_resource type="Texture2D" uid="uid://dcef4op2jk03h" path="res://gfx/UI/gameUI/effects/effect_tired_high.png" id="1_6ulu5"]
+[ext_resource type="Script" uid="uid://bgqt0kdjsgsb2" path="res://data/effect/Effect.cs" id="1_b8s2m"]
+[ext_resource type="Script" uid="uid://bve4fsoq0q8pi" path="res://data/effect/EffectModifier.cs" id="2_ong8c"]
+
+[resource]
+script = ExtResource("1_b8s2m")
+EffectSeverity = 2
+EffectName = "Exhausted"
+Icon = ExtResource("1_6ulu5")
+EffectDescription = "I'm completely spent. I want nothing more than to lie down and take a long nap. My muscles ache and I'm having problems thinking."
+Type = 2
+metadata/_custom_type_script = "uid://bgqt0kdjsgsb2"

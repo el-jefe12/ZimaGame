@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://ccno3di2krl7a"]
+
+[ext_resource type="Texture2D" uid="uid://dp3rkt1gcyeol" path="res://gfx/UI/gameUI/inventory/inventory_slot.png" id="1_l3fr4"]
+[ext_resource type="Script" uid="uid://c5r47mq0i8ea0" path="res://scripts/player/inventory/InventorySlot.cs" id="2_et8er"]
+
+[node name="Inventory_Slot" type="TextureRect"]
+custom_minimum_size = Vector2(40, 40)
+anchors_preset = -1
+anchor_right = 0.021000002
+anchor_bottom = 0.037
+offset_right = -0.3200035
+offset_bottom = 0.040000916
+texture = ExtResource("1_l3fr4")
+script = ExtResource("2_et8er")

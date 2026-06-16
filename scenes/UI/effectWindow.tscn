@@ -1,0 +1,207 @@
+[gd_scene load_steps=20 format=3 uid="uid://dr2xk6w872i3a"]
+
+[ext_resource type="Script" uid="uid://kgoai4i2w88k" path="res://scripts/player/player_effects/EffectWindowLogic.cs" id="1_vk2g4"]
+[ext_resource type="Theme" uid="uid://cisex1042vwyr" path="res://themes/theme_header_effectWindow2.tres" id="1_x3a8h"]
+[ext_resource type="Texture2D" uid="uid://cyol0htvownev" path="res://gfx/UI/gameUI/robinson_info_button_hover_close.png" id="4_dr53b"]
+[ext_resource type="Theme" uid="uid://bjld0ipyc8nh3" path="res://themes/theme_header_effectWindow.tres" id="4_qm8t5"]
+[ext_resource type="Texture2D" uid="uid://8xypvsp2h4qt" path="res://gfx/UI/gameUI/effect_panel_header.png" id="5_4jai2"]
+[ext_resource type="FontFile" uid="uid://tmjnu6qou2el" path="res://fonts/MONOFONT.TTF" id="6_4jai2"]
+[ext_resource type="Texture2D" uid="uid://q7b8c2h2gjlp" path="res://gfx/UI/gameUI/robinson_info_button.png" id="7_vg8o3"]
+[ext_resource type="Texture2D" uid="uid://c6msbi6iq7i2h" path="res://gfx/UI/gameUI/robinson_info_button_close.png" id="8_i1tue"]
+[ext_resource type="Texture2D" uid="uid://dd3jjcn3fq56k" path="res://gfx/UI/gameUI/robinson_info_button_hover.png" id="9_aej5v"]
+[ext_resource type="FontFile" uid="uid://crnslnbsbebhq" path="res://fonts/EstieBestieRegular-R9elW.ttf" id="11_aej5v"]
+[ext_resource type="Texture2D" uid="uid://dnliatr6bms65" path="res://gfx/UI/gameUI/paper_test.png" id="11_dr53b"]
+[ext_resource type="Shader" uid="uid://c3kd7hdj7ikcc" path="res://shaders/roundEdges.gdshader" id="11_t1im1"]
+[ext_resource type="FontFile" uid="uid://1ap2sma0hofv" path="res://fonts/ChildWriting-Regular.ttf" id="12_jqh2i"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_i1tue"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_jqh2i"]
+texture = ExtResource("5_4jai2")
+modulate_color = Color(0.53422457, 0.6248382, 0.50706863, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4jai2"]
+shader = ExtResource("11_t1im1")
+shader_parameter/radius_tl = 0.0
+shader_parameter/radius_tr = 0.0
+shader_parameter/radius_br = 0.15
+shader_parameter/radius_bl = 0.15
+shader_parameter/edge_softness = 1.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4jai2"]
+texture = ExtResource("11_dr53b")
+texture_margin_left = 5.0
+texture_margin_top = 5.0
+texture_margin_right = 5.0
+texture_margin_bottom = 5.0
+expand_margin_bottom = 40.0
+region_rect = Rect2(0, 0, 64, 64)
+modulate_color = Color(0.9830367, 0.94884807, 0.92984366, 1)
+
+[sub_resource type="Theme" id="Theme_i1tue"]
+PanelContainer/styles/panel = SubResource("StyleBoxTexture_4jai2")
+
+[sub_resource type="Theme" id="Theme_vg8o3"]
+PanelContainer/styles/panel = null
+
+[node name="EffectWindow" type="PanelContainer"]
+process_mode = 3
+anchors_preset = -1
+anchor_right = 0.21000001
+anchor_bottom = 0.095000006
+offset_right = -0.2000122
+offset_bottom = 54.399994
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_i1tue")
+script = ExtResource("1_vk2g4")
+buff_header = ExtResource("1_x3a8h")
+buff_body = ExtResource("4_qm8t5")
+infoHoverXTexture = ExtResource("4_dr53b")
+infoHoverTexture = ExtResource("9_aej5v")
+
+[node name="EffectMarginContainer" type="MarginContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="EffectMarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="EffectLabelBackground" type="PanelContainer" parent="EffectMarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_jqh2i")
+
+[node name="MarginContainer" type="MarginContainer" parent="EffectMarginContainer/VBoxContainer/EffectLabelBackground"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="EffectMarginContainer/VBoxContainer/EffectLabelBackground/MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+
+[node name="EffectIcon" type="TextureRect" parent="EffectMarginContainer/VBoxContainer/EffectLabelBackground/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+mouse_filter = 2
+expand_mode = 3
+
+[node name="EffectName" type="RichTextLabel" parent="EffectMarginContainer/VBoxContainer/EffectLabelBackground/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_colors/default_color = Color(0.80561125, 0.7766285, 0.7219141, 1)
+theme_override_colors/font_shadow_color = Color(0.03137255, 0.03137255, 0.03137255, 0.6313726)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_fonts/normal_font = ExtResource("6_4jai2")
+theme_override_font_sizes/normal_font_size = 18
+bbcode_enabled = true
+vertical_alignment = 1
+
+[node name="EffectInfoTextureButton" type="TextureButton" parent="EffectMarginContainer/VBoxContainer/EffectLabelBackground/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+toggle_mode = true
+action_mode = 0
+texture_normal = ExtResource("7_vg8o3")
+texture_pressed = ExtResource("8_i1tue")
+texture_hover = ExtResource("9_aej5v")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="PanelContainer" type="PanelContainer" parent="EffectMarginContainer/VBoxContainer"]
+material = SubResource("ShaderMaterial_4jai2")
+layout_mode = 2
+theme = SubResource("Theme_i1tue")
+
+[node name="EffectDescriptionContainer" type="MarginContainer" parent="EffectMarginContainer/VBoxContainer/PanelContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+mouse_filter = 2
+theme = SubResource("Theme_vg8o3")
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="EffectMarginContainer/VBoxContainer/PanelContainer/EffectDescriptionContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="EffectDesc" type="RichTextLabel" parent="EffectMarginContainer/VBoxContainer/PanelContainer/EffectDescriptionContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+theme_override_colors/default_color = Color(0.010533222, 0.13801023, 0.20765302, 1)
+theme_override_colors/font_shadow_color = Color(0.07058824, 0.09019608, 0.18039216, 0.039215688)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/normal_font = ExtResource("11_aej5v")
+theme_override_font_sizes/normal_font_size = 20
+theme_override_font_sizes/bold_font_size = 20
+theme_override_font_sizes/bold_italics_font_size = 20
+theme_override_font_sizes/italics_font_size = 20
+theme_override_font_sizes/mono_font_size = 20
+bbcode_enabled = true
+fit_content = true
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="EffectEffectLabel" type="RichTextLabel" parent="EffectMarginContainer/VBoxContainer/PanelContainer/EffectDescriptionContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+theme_override_colors/default_color = Color(0.8675155, 0.5989497, 0.28126064, 1)
+theme_override_colors/font_shadow_color = Color(0.12955844, 0.12955847, 0.12955841, 0.39215687)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/normal_font = ExtResource("12_jqh2i")
+theme_override_font_sizes/normal_font_size = 22
+theme_override_font_sizes/bold_font_size = 22
+theme_override_font_sizes/bold_italics_font_size = 22
+theme_override_font_sizes/italics_font_size = 22
+theme_override_font_sizes/mono_font_size = 22
+bbcode_enabled = true
+text = "Effects:"
+fit_content = true
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="EffectStatsLabel" type="RichTextLabel" parent="EffectMarginContainer/VBoxContainer/PanelContainer/EffectDescriptionContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+theme_override_colors/default_color = Color(0.96772116, 0.92315453, 0.8130993, 1)
+theme_override_colors/font_shadow_color = Color(0.36862746, 0.3254902, 0.26666668, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/normal_font = ExtResource("6_4jai2")
+theme_override_font_sizes/normal_font_size = 16
+theme_override_font_sizes/bold_font_size = 16
+theme_override_font_sizes/bold_italics_font_size = 16
+theme_override_font_sizes/italics_font_size = 16
+theme_override_font_sizes/mono_font_size = 16
+bbcode_enabled = true
+fit_content = true
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[connection signal="pressed" from="EffectMarginContainer/VBoxContainer/EffectLabelBackground/MarginContainer/HBoxContainer/EffectInfoTextureButton" to="." method="_on_effect_info_texture_button_pressed"]

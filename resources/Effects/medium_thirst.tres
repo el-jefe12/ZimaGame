@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="Effect" load_steps=4 format=3 uid="uid://bxv28vupxbw6p"]
+
+[ext_resource type="Texture2D" uid="uid://5rb00uuir74x" path="res://gfx/UI/gameUI/effects/effect_thirst_medium.png" id="1_2md7s"]
+[ext_resource type="Script" uid="uid://bgqt0kdjsgsb2" path="res://data/effect/Effect.cs" id="1_agbxv"]
+[ext_resource type="Script" uid="uid://bve4fsoq0q8pi" path="res://data/effect/EffectModifier.cs" id="2_k1qab"]
+
+[resource]
+script = ExtResource("1_agbxv")
+EffectSeverity = 1
+EffectName = "Mildly Thirsty"
+Icon = ExtResource("1_2md7s")
+EffectDescription = "My throat feels dry, and I can feel the exhaustion and irritation rising."
+Type = 1
+metadata/_custom_type_script = "uid://bgqt0kdjsgsb2"

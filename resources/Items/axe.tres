@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="Item" load_steps=3 format=3 uid="uid://c2ltnsxwpmlv2"]
+
+[ext_resource type="PackedScene" uid="uid://kehcdvtlstxi" path="res://models/player/tools/axe/axe.tscn" id="1_68dip"]
+[ext_resource type="Script" uid="uid://m2f7h5b81nkv" path="res://data/Item.cs" id="1_rwn83"]
+
+[resource]
+script = ExtResource("1_rwn83")
+ItemName = "Axe"
+scene = ExtResource("1_68dip")
+metadata/_custom_type_script = "uid://m2f7h5b81nkv"

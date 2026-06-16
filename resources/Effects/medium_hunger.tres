@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="Effect" load_steps=3 format=3 uid="uid://cerqtctcqvs84"]
+
+[ext_resource type="Texture2D" uid="uid://dk212x0gc6pvq" path="res://gfx/UI/gameUI/effects/effect_hunger_medium.png" id="1_6qku0"]
+[ext_resource type="Script" uid="uid://bgqt0kdjsgsb2" path="res://data/effect/Effect.cs" id="1_irqqu"]
+
+[resource]
+script = ExtResource("1_irqqu")
+EffectSeverity = 1
+EffectName = "Mildly Hungry"
+Icon = ExtResource("1_6qku0")
+EffectDescription = "My stomach feels like it is cramping, Lack of nutrition leaves me feeling a little drowsy."
+isBuff = true
+type = "hunger"
+metadata/_custom_type_script = "uid://bgqt0kdjsgsb2"

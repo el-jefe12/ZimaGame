@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="Weapons" load_steps=2 format=3 uid="uid://cc5ayd8saot84"]
+
+[ext_resource type="Script" uid="uid://bmf8d36yq68ul" path="res://resources/Weapons.cs" id="1_f46ux"]
+
+[resource]
+script = ExtResource("1_f46ux")
+WeaponName = "axe"
+metadata/_custom_type_script = "uid://bmf8d36yq68ul"

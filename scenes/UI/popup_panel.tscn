@@ -1,0 +1,132 @@
+[gd_scene load_steps=7 format=3 uid="uid://dndsqjhpyji8n"]
+
+[ext_resource type="Script" uid="uid://3eaxg4he083s" path="res://scripts/UI/popupPanelLogic.cs" id="1_tsfo7"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yjsyi"]
+bg_color = Color(0.16862746, 0.18039216, 0.16470589, 0.8627451)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="Theme" id="Theme_l2wmv"]
+PanelContainer/styles/panel = SubResource("StyleBoxFlat_yjsyi")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tsfo7"]
+bg_color = Color(0.98039216, 0.29803923, 0.44705883, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nirxl"]
+bg_color = Color(0.84705883, 0.4509804, 0.22745098, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="Theme" id="Theme_tsfo7"]
+Button/styles/hover = SubResource("StyleBoxFlat_tsfo7")
+Button/styles/normal = SubResource("StyleBoxFlat_nirxl")
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("1_tsfo7")
+
+[node name="PopupPanelContainer" type="PanelContainer" parent="."]
+z_index = 99
+custom_minimum_size = Vector2(300, 100)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.349
+anchor_top = 0.34800002
+anchor_right = 0.651
+anchor_bottom = 0.652
+offset_left = -0.5800171
+offset_top = 0.15997314
+offset_right = 0.57995605
+offset_bottom = -0.16003418
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+theme = SubResource("Theme_l2wmv")
+
+[node name="MarginContainer" type="MarginContainer" parent="PopupPanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PopupPanelContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="PopupRichTextLabel" type="RichTextLabel" parent="PopupPanelContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+theme_override_font_sizes/normal_font_size = 36
+theme_override_font_sizes/bold_font_size = 36
+bbcode_enabled = true
+text = "LABEL"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PopupTooltipRichTextLabel" type="RichTextLabel" parent="PopupPanelContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+theme_override_font_sizes/normal_font_size = 20
+theme_override_font_sizes/bold_font_size = 20
+bbcode_enabled = true
+text = "[color=\"dark_orange\"]This will [color=\"#fa4c72\"]have some stuff here[/color]. Are you sure you want to edit this?[/color]"
+fit_content = true
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ButtonHBoxContainer" type="HBoxContainer" parent="PopupPanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="GoButton" type="Button" parent="PopupPanelContainer/MarginContainer/VBoxContainer/ButtonHBoxContainer"]
+unique_name_in_owner = true
+z_index = 1001
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = SubResource("Theme_tsfo7")
+theme_override_font_sizes/font_size = 26
+action_mode = 0
+text = "Go"
+
+[node name="CancelButton" type="Button" parent="PopupPanelContainer/MarginContainer/VBoxContainer/ButtonHBoxContainer"]
+unique_name_in_owner = true
+z_index = 1001
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = SubResource("Theme_tsfo7")
+theme_override_font_sizes/font_size = 26
+action_mode = 0
+text = "Cancel"
+
+[node name="OverlayPanel" type="Panel" parent="."]
+unique_name_in_owner = true
+z_index = 3
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[connection signal="pressed" from="PopupPanelContainer/MarginContainer/VBoxContainer/ButtonHBoxContainer/GoButton" to="PopupPanelContainer" method="_on_go_button_pressed"]
+[connection signal="pressed" from="PopupPanelContainer/MarginContainer/VBoxContainer/ButtonHBoxContainer/CancelButton" to="PopupPanelContainer" method="_on_cancel_button_pressed"]

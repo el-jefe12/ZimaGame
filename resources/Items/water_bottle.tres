@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="Item" load_steps=7 format=3 uid="uid://cc4ys3yuf0f6h"]
+
+[ext_resource type="Resource" uid="uid://cg6rt5u6ylaxk" path="res://resources/Items/ItemValues/water_bottle_values.tres" id="1_5ob6i"]
+[ext_resource type="Script" uid="uid://m2f7h5b81nkv" path="res://data/Item.cs" id="1_6wguh"]
+[ext_resource type="Script" uid="uid://2ofxdkbacdjx" path="res://data/ItemAction.cs" id="1_lhswn"]
+[ext_resource type="PackedScene" uid="uid://cj0kbq0vd75yo" path="res://models/player/items/bottle/water_bottle.tscn" id="2_27yh8"]
+[ext_resource type="Resource" uid="uid://bqloeph8m1aw3" path="res://resources/Items/ItemsActions/EatActions/EatAction_water_bottle.tres" id="2_ejhin"]
+[ext_resource type="Texture2D" uid="uid://cmco1pxtm3qbt" path="res://gfx/UI/gameUI/inventory/item_icon/item_drink_test.png" id="4_lhswn"]
+
+[resource]
+script = ExtResource("1_6wguh")
+ItemName = "Bottle Of Water"
+WorldModel = ExtResource("2_27yh8")
+Icon = ExtResource("4_lhswn")
+ModelPosition = Vector3(0.047337472, -0.14268142, -0.0014876425)
+ModelRotation = Vector3(0, -57.7, 0)
+ItemWeight = 1.7
+ConsumableData = ExtResource("1_5ob6i")
+Actions = Array[ExtResource("1_lhswn")]([ExtResource("2_ejhin")])
+metadata/_custom_type_script = "uid://m2f7h5b81nkv"

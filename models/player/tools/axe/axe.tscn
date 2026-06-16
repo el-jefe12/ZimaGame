@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://kehcdvtlstxi"]
+
+[ext_resource type="PackedScene" uid="uid://d0bynau0tknrm" path="res://models/player/tools/axe/axe.glb" id="1_a3o3o"]
+
+[node name="axe" instance=ExtResource("1_a3o3o")]
+transform = Transform3D(0.08, 0, 0, 0, 0.08, 0, 0, 0, 0.08, 0, 0, 0)

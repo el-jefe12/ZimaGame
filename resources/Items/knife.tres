@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="Item" load_steps=6 format=3 uid="uid://w70e7n8npycj"]
+
+[ext_resource type="Script" uid="uid://2ofxdkbacdjx" path="res://data/ItemAction.cs" id="1_c0tum"]
+[ext_resource type="Script" uid="uid://m2f7h5b81nkv" path="res://data/Item.cs" id="2_3n6lg"]
+[ext_resource type="Resource" uid="uid://bp4jl2m5gxmlt" path="res://resources/Items/ItemsActions/AttackActions/AttackAction_knife.tres" id="2_84k13"]
+[ext_resource type="Texture2D" uid="uid://q7b8c2h2gjlp" path="res://gfx/UI/gameUI/robinson_info_button.png" id="2_mlr58"]
+[ext_resource type="PackedScene" uid="uid://bacrv272654oi" path="res://models/player/tools/knife/knife.tscn" id="3_84k13"]
+
+[resource]
+script = ExtResource("2_3n6lg")
+ItemName = "Knife"
+WorldModel = ExtResource("3_84k13")
+Icon = ExtResource("2_mlr58")
+ModelPosition = Vector3(0, 0.108, 0)
+ModelRotation = Vector3(-3.9, -152.9, 71.1)
+Item_Type = 1
+Item_SubType = 4
+ItemWeight = 3.2
+Actions = Array[ExtResource("1_c0tum")]([ExtResource("2_84k13")])
+metadata/_custom_type_script = "uid://m2f7h5b81nkv"

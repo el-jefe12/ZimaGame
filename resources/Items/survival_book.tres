@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="Item" load_steps=6 format=3 uid="uid://stum0rvnvcrk"]
+
+[ext_resource type="Script" uid="uid://2ofxdkbacdjx" path="res://data/ItemAction.cs" id="1_5w5wg"]
+[ext_resource type="Resource" uid="uid://dehr5dvb7rexv" path="res://resources/Items/ItemsActions/ItemOpenActions/OpenAction_survival_book.tres" id="2_ki2rr"]
+[ext_resource type="Texture2D" uid="uid://dm4ufr5k1ylnt" path="res://gfx/UI/gameUI/effects/effect_buff_tea.png" id="2_ouxvl"]
+[ext_resource type="Script" uid="uid://m2f7h5b81nkv" path="res://data/Item.cs" id="2_vjpvx"]
+[ext_resource type="PackedScene" uid="uid://dbl7xe7sy63pf" path="res://models/player/tools/survival_book/survival_book.tscn" id="3_ki2rr"]
+
+[resource]
+script = ExtResource("2_vjpvx")
+ItemName = "Survival Handbook"
+WorldModel = ExtResource("3_ki2rr")
+Icon = ExtResource("2_ouxvl")
+ModelRotation = Vector3(-9.1, -3, -74.8)
+Item_Type = 1
+Item_SubType = 4
+ItemWeight = 0.52
+Actions = Array[ExtResource("1_5w5wg")]([ExtResource("2_ki2rr")])
+metadata/_custom_type_script = "uid://m2f7h5b81nkv"

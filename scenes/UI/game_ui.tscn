@@ -1,0 +1,883 @@
+[gd_scene load_steps=57 format=3 uid="uid://iltiasdufm8g"]
+
+[ext_resource type="Script" uid="uid://d0ho7bgcyml20" path="res://scripts/player/playerHUD.cs" id="1_5b3ti"]
+[ext_resource type="PackedScene" uid="uid://b5uqe4sx2qt8p" path="res://scenes/UI/ui_button_action_indicator.tscn" id="2_pnp2g"]
+[ext_resource type="Texture2D" uid="uid://b0v4eylktm6k1" path="res://gfx/UI/gameUI/BarEmpty.png" id="2_yr8ot"]
+[ext_resource type="Texture2D" uid="uid://bhgpxgvocng3g" path="res://gfx/UI/gameUI/healthBarColor.png" id="3_5b3ti"]
+[ext_resource type="Texture2D" uid="uid://bpatgm2kakuue" path="res://gfx/UI/gameUI/ui_dot_test.png" id="3_apvaj"]
+[ext_resource type="PackedScene" uid="uid://b3sfdarrqhye" path="res://scenes/items/Item.tscn" id="3_w1xlv"]
+[ext_resource type="Texture2D" uid="uid://cpmqybikasys0" path="res://gfx/UI/gameUI/staminaBarColor.png" id="4_cn4gw"]
+[ext_resource type="Texture2D" uid="uid://q4u71qvceyao" path="res://gfx/UI/gameUI/robinson_bar_UI_health_over2.png" id="4_hm7in"]
+[ext_resource type="Texture2D" uid="uid://dxtsj23d1lq5e" path="res://gfx/UI/gameUI/robinson_bar_UI_stamina_over2.png" id="6_hm7in"]
+[ext_resource type="Texture2D" uid="uid://bk8kows4sp76v" path="res://gfx/UI/gameUI/scanline_tile.png" id="7_gh1hf"]
+[ext_resource type="Texture2D" uid="uid://bjgfirs7j7eyk" path="res://gfx/UI/gameUI/temp_edge_new.png" id="7_nydx2"]
+[ext_resource type="Texture2D" uid="uid://erdktwyam7h8" path="res://gfx/UI/gameUI/scanline_tile3.png" id="9_3tbac"]
+[ext_resource type="Shader" uid="uid://dtfkeu511ytso" path="res://shaders/colorChangeShader.gdshader" id="12_pxqmr"]
+[ext_resource type="Texture2D" uid="uid://bjvh3fvdmupa4" path="res://gfx/UI/gameUI/temperature_me_test_big.png" id="13_pxqmr"]
+[ext_resource type="FontFile" uid="uid://bi0ns1ho2odjy" path="res://fonts/E1234-G3KXD.ttf" id="13_tkspg"]
+[ext_resource type="Texture2D" uid="uid://b5vmbhxd6mhrg" path="res://gfx/UI/gameUI/temperature_out_test_big.png" id="14_6ja6y"]
+[ext_resource type="Script" uid="uid://bu6cxn40a2ser" path="res://scripts/player/inventory/HotBarScript.cs" id="16_04f1q"]
+[ext_resource type="Texture2D" uid="uid://beq75a6ri2oba" path="res://gfx/UI/gameUI/quickbar_selected_slot.png" id="17_fbikn"]
+[ext_resource type="Texture2D" uid="uid://dp3rkt1gcyeol" path="res://gfx/UI/gameUI/inventory/inventory_slot.png" id="17_jtm65"]
+[ext_resource type="PackedScene" uid="uid://cpoyvan7ovi" path="res://scenes/UI/effect_icon.tscn" id="18_pnp2g"]
+[ext_resource type="PackedScene" uid="uid://dr2xk6w872i3a" path="res://scenes/UI/effectWindow.tscn" id="18_uki5y"]
+[ext_resource type="Resource" uid="uid://0ian6qcsx8sp" path="res://resources/Effects/low_tired.tres" id="19_pnp2g"]
+[ext_resource type="Texture2D" uid="uid://c7ipaj7bw4bq1" path="res://gfx/UI/gameUI/quickbar_test.png" id="20_opfjw"]
+[ext_resource type="Script" uid="uid://tpmkn3r7facm" path="res://scripts/player/inventory/ContainerInventoryPanel.cs" id="21_04f1q"]
+[ext_resource type="Texture2D" uid="uid://c2j6q0souklto" path="res://gfx/UI/gameUI/bag_inventory_test2.png" id="21_vr70r"]
+[ext_resource type="Texture2D" uid="uid://cv7brk4ew0di6" path="res://gfx/UI/gameUI/inventory/sort/inv_desc.png" id="24_apvaj"]
+[ext_resource type="Script" uid="uid://lhfw4mpepyvj" path="res://scripts/UI/InventoryContainerScript.cs" id="24_r4q0o"]
+[ext_resource type="Theme" uid="uid://cmo4u73swvl1p" path="res://themes/theme_paper.tres" id="25_6ja6y"]
+[ext_resource type="Texture2D" uid="uid://bn1m8tjv3hfhn" path="res://gfx/UI/gameUI/inventory/sort/inv_health.png" id="25_apvaj"]
+[ext_resource type="Theme" uid="uid://dj2txg3l3oumd" path="res://themes/theme_label_text_handwritten.tres" id="26_46h5h"]
+[ext_resource type="Texture2D" uid="uid://bncbnc6owk7ro" path="res://gfx/UI/gameUI/inventory/sort/inv_amount.png" id="26_vr70r"]
+[ext_resource type="Texture2D" uid="uid://bx1d7cihifwvd" path="res://gfx/UI/gameUI/weight_bar_test.png" id="27_46h5h"]
+[ext_resource type="Texture2D" uid="uid://cu1t4ypxb2cix" path="res://gfx/UI/gameUI/inventory/sort/inv_weight.png" id="27_fbikn"]
+[ext_resource type="Texture2D" uid="uid://bqhvuhup4scxo" path="res://gfx/UI/loadingScreen/loadingScreenBarOver.png" id="28_oud5o"]
+[ext_resource type="Texture2D" uid="uid://ccvqhqxkewfc7" path="res://gfx/UI/gameUI/inventory/sort/inv_type.png" id="28_vr70r"]
+[ext_resource type="Texture2D" uid="uid://c7c8giwon2tj4" path="res://gfx/UI/gameUI/weight_bar_test_progress.png" id="29_ks1l0"]
+[ext_resource type="PackedScene" uid="uid://eoouomqba61r" path="res://scenes/UI/item_inv_slot.tscn" id="29_vr70r"]
+[ext_resource type="Texture2D" uid="uid://bgl5mrdn2f4mo" path="res://gfx/UI/gameUI/bookBackNew.png" id="30_oud5o"]
+[ext_resource type="FontFile" uid="uid://tmjnu6qou2el" path="res://fonts/MONOFONT.TTF" id="32_lc28i"]
+[ext_resource type="Theme" uid="uid://cisex1042vwyr" path="res://themes/theme_header_effectWindow2.tres" id="32_sdedc"]
+[ext_resource type="Resource" uid="uid://il45co74f50g" path="res://resources/Effects/deadly_tired.tres" id="33_lc28i"]
+
+[sub_resource type="Theme" id="Theme_pxqmr"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3tbac"]
+
+[sub_resource type="Theme" id="Theme_hm7in"]
+PanelContainer/styles/panel = SubResource("StyleBoxEmpty_3tbac")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_nydx2"]
+texture = ExtResource("9_3tbac")
+axis_stretch_horizontal = 2
+axis_stretch_vertical = 2
+
+[sub_resource type="Theme" id="Theme_3tbac"]
+PanelContainer/styles/panel = SubResource("StyleBoxTexture_nydx2")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hm7in"]
+shader = ExtResource("12_pxqmr")
+shader_parameter/from_color = Color(0, 0, 0, 1)
+shader_parameter/to_color = Color(0.1254902, 0.14901961, 0.14509805, 1)
+shader_parameter/tolerance = 0.05
+shader_parameter/affect_alpha = false
+shader_parameter/alpha_strength = 1.0
+shader_parameter/flip_h = false
+shader_parameter/flip_v = false
+shader_parameter/use_circle_mask = false
+shader_parameter/circle_center = Vector2(0.5, 0.5)
+shader_parameter/circle_radius = 0.5
+shader_parameter/edge_softness = 0.05
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pxqmr"]
+shader = ExtResource("12_pxqmr")
+shader_parameter/from_color = Color(0, 0, 0, 1)
+shader_parameter/to_color = Color(0.1254902, 0.14901961, 0.14509805, 1)
+shader_parameter/tolerance = 0.05
+shader_parameter/affect_alpha = false
+shader_parameter/alpha_strength = 1.0
+shader_parameter/flip_h = false
+shader_parameter/flip_v = false
+shader_parameter/use_circle_mask = false
+shader_parameter/circle_center = Vector2(0.5, 0.5)
+shader_parameter/circle_radius = 0.5
+shader_parameter/edge_softness = 0.05
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_pnp2g"]
+texture = ExtResource("21_vr70r")
+
+[sub_resource type="Theme" id="Theme_lc28i"]
+PanelContainer/styles/panel = SubResource("StyleBoxTexture_pnp2g")
+
+[sub_resource type="Theme" id="Theme_fbikn"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_04f1q"]
+
+[sub_resource type="Theme" id="Theme_w1xlv"]
+PanelContainer/styles/panel = SubResource("StyleBoxTexture_04f1q")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ks1l0"]
+texture = ExtResource("30_oud5o")
+
+[sub_resource type="Theme" id="Theme_pnp2g"]
+PanelContainer/styles/panel = SubResource("StyleBoxTexture_ks1l0")
+
+[sub_resource type="Theme" id="Theme_sdedc"]
+
+[node name="GameUI" type="Control"]
+z_index = 300
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("1_5b3ti")
+metadata/_edit_vertical_guides_ = [960.0]
+metadata/_edit_horizontal_guides_ = [540.0, 1047.0, 84.0, 64.0]
+
+[node name="ButtonActionVBoxContainer" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(250, 250)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.855
+anchor_top = 0.67300004
+anchor_right = 0.9850001
+anchor_bottom = 0.90500003
+offset_left = -0.60009766
+offset_top = 0.15997314
+offset_right = -0.20019531
+offset_bottom = -0.4000244
+alignment = 2
+
+[node name="HotBar" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+z_index = 999
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.855
+anchor_top = 0.91
+anchor_right = 0.97800004
+anchor_bottom = 0.966
+offset_left = -0.60009766
+offset_top = 0.19995117
+offset_right = -0.76013184
+offset_bottom = -0.2800293
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 1
+theme = SubResource("Theme_pxqmr")
+script = ExtResource("16_04f1q")
+ItemScene = ExtResource("3_w1xlv")
+
+[node name="TextureRect" type="TextureRect" parent="HotBar"]
+layout_mode = 2
+texture = ExtResource("20_opfjw")
+expand_mode = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HotBar"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="HotBar"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="HotbarGridContainer" type="GridContainer" parent="HotBar/MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+columns = 5
+
+[node name="ItemSlot0" type="TextureRect" parent="HotBar/MarginContainer/HotbarGridContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+texture = ExtResource("17_jtm65")
+expand_mode = 1
+
+[node name="SelectedItemSlot" type="TextureRect" parent="HotBar/MarginContainer/HotbarGridContainer/ItemSlot0"]
+unique_name_in_owner = true
+z_index = 5
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("17_fbikn")
+expand_mode = 1
+
+[node name="ItemSlot1" type="TextureRect" parent="HotBar/MarginContainer/HotbarGridContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("17_jtm65")
+
+[node name="ItemSlot2" type="TextureRect" parent="HotBar/MarginContainer/HotbarGridContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("17_jtm65")
+
+[node name="ItemSlot3" type="TextureRect" parent="HotBar/MarginContainer/HotbarGridContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("17_jtm65")
+
+[node name="ItemSlot4" type="TextureRect" parent="HotBar/MarginContainer/HotbarGridContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("17_jtm65")
+
+[node name="CurrentItemNameRichTextLabel" type="RichTextLabel" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 1651.0
+offset_top = 1047.0
+offset_right = 1867.0
+offset_bottom = 1070.0
+theme_override_colors/default_color = Color(0.8156863, 0.6784314, 0.40784314, 1)
+theme_override_colors/font_shadow_color = Color(0.03137255, 0.03137255, 0.03137255, 0.6313726)
+theme_override_fonts/normal_font = ExtResource("32_lc28i")
+theme_override_font_sizes/normal_font_size = 14
+theme_override_font_sizes/bold_font_size = 11
+theme_override_font_sizes/bold_italics_font_size = 11
+theme_override_font_sizes/italics_font_size = 11
+theme_override_font_sizes/mono_font_size = 11
+bbcode_enabled = true
+text = "None"
+fit_content = true
+horizontal_alignment = 2
+
+[node name="MainUI" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="UIDot" type="TextureRect" parent="MainUI"]
+custom_minimum_size = Vector2(6, 6)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -2.5
+offset_top = -2.5
+offset_right = 2.5
+offset_bottom = 2.5
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_apvaj")
+expand_mode = 1
+
+[node name="HealthBar" type="TextureProgressBar" parent="MainUI"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.021000002
+anchor_top = 0.86100006
+anchor_right = 0.215
+anchor_bottom = 0.91
+offset_left = -0.3200035
+offset_top = 0.11993408
+offset_right = -0.8000183
+offset_bottom = 0.19995117
+value = 100.0
+texture_under = ExtResource("2_yr8ot")
+texture_over = ExtResource("4_hm7in")
+texture_progress = ExtResource("3_5b3ti")
+
+[node name="StaminaBar" type="TextureProgressBar" parent="MainUI"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.021000002
+anchor_top = 0.90700006
+anchor_right = 0.215
+anchor_bottom = 0.95600003
+offset_left = -0.3200035
+offset_top = 0.4399414
+offset_right = -0.8000183
+offset_bottom = 0.52001953
+value = 100.0
+texture_under = ExtResource("2_yr8ot")
+texture_over = ExtResource("6_hm7in")
+texture_progress = ExtResource("4_cn4gw")
+
+[node name="PanelContainer" type="PanelContainer" parent="MainUI"]
+z_index = 70
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.21700001
+anchor_top = 0.78000003
+anchor_right = 0.379
+anchor_bottom = 0.97900003
+offset_left = 0.35998535
+offset_top = 4.5999756
+offset_right = -0.6799927
+offset_bottom = -0.32006836
+theme = SubResource("Theme_hm7in")
+
+[node name="TextureRect" type="TextureRect" parent="MainUI/PanelContainer"]
+z_index = 80
+layout_mode = 2
+texture = ExtResource("7_nydx2")
+
+[node name="MarginContainer" type="MarginContainer" parent="MainUI/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 25
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 25
+
+[node name="TextureRect" type="TextureRect" parent="MainUI/PanelContainer/MarginContainer"]
+z_index = 30
+layout_mode = 2
+texture = ExtResource("7_gh1hf")
+expand_mode = 1
+
+[node name="TemperaturePanelContainer" type="PanelContainer" parent="MainUI/PanelContainer/MarginContainer"]
+layout_mode = 2
+theme = SubResource("Theme_3tbac")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MainUI/PanelContainer/MarginContainer/TemperaturePanelContainer"]
+custom_minimum_size = Vector2(240, 160)
+layout_mode = 2
+theme_override_constants/separation = 5
+alignment = 1
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="MainUI/PanelContainer/MarginContainer/TemperaturePanelContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 2
+
+[node name="DigitalClock" type="RichTextLabel" parent="MainUI/PanelContainer/MarginContainer/TemperaturePanelContainer/VBoxContainer/HBoxContainer3"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(80, 20)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_colors/default_color = Color(0.12669563, 0.1499584, 0.14663666, 1)
+theme_override_fonts/normal_font = ExtResource("13_tkspg")
+bbcode_enabled = true
+text = "10:00"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MainUI/PanelContainer/MarginContainer/TemperaturePanelContainer/VBoxContainer"]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+alignment = 1
+
+[node name="TempMeIconTextureRect" type="TextureRect" parent="MainUI/PanelContainer/MarginContainer/TemperaturePanelContainer/VBoxContainer/HBoxContainer"]
+material = SubResource("ShaderMaterial_hm7in")
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+texture = ExtResource("13_pxqmr")
+expand_mode = 1
+
+[node name="TemperatureIndicatorPlayer" type="RichTextLabel" parent="MainUI/PanelContainer/MarginContainer/TemperaturePanelContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/normal_font = ExtResource("13_tkspg")
+theme_override_font_sizes/normal_font_size = 22
+theme_override_font_sizes/bold_font_size = 22
+theme_override_font_sizes/bold_italics_font_size = 22
+theme_override_font_sizes/italics_font_size = 22
+theme_override_font_sizes/mono_font_size = 22
+bbcode_enabled = true
+text = "[color=\"light_green\"] 36.2°C[/color]"
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="MainUI/PanelContainer/MarginContainer/TemperaturePanelContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="TempOutIconTextureRect" type="TextureRect" parent="MainUI/PanelContainer/MarginContainer/TemperaturePanelContainer/VBoxContainer/HBoxContainer2"]
+material = SubResource("ShaderMaterial_pxqmr")
+clip_contents = true
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+texture = ExtResource("14_6ja6y")
+expand_mode = 1
+
+[node name="TemperatureIndicatorOutside" type="RichTextLabel" parent="MainUI/PanelContainer/MarginContainer/TemperaturePanelContainer/VBoxContainer/HBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/normal_font = ExtResource("13_tkspg")
+theme_override_font_sizes/normal_font_size = 22
+theme_override_font_sizes/bold_font_size = 22
+theme_override_font_sizes/bold_italics_font_size = 22
+theme_override_font_sizes/italics_font_size = 22
+theme_override_font_sizes/mono_font_size = 22
+bbcode_enabled = true
+text = "[color=\"sky_blue\"]-12.1°C[/color]"
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="EffectsHBoxContainer" type="HBoxContainer" parent="MainUI"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.026
+anchor_top = 0.82600003
+anchor_right = 0.20700002
+anchor_bottom = 0.86300004
+offset_left = 0.07999802
+offset_top = -0.08001709
+offset_right = -0.44003296
+offset_bottom = -0.040039063
+
+[node name="InventoryUI" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="ChestInventoryContainer" type="PanelContainer" parent="InventoryUI" groups=["container_inventory_panel"]]
+unique_name_in_owner = true
+z_index = 30
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.14600001
+anchor_top = 0.059000004
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -0.32003784
+offset_top = 0.27999496
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_lc28i")
+script = ExtResource("21_04f1q")
+SlotTemplatePath = NodePath("../DummyInvItemSlot")
+InventoryGridPath = NodePath("MarginContainer/VBoxContainer/ItemsContainerScrollContainer/MarginContainer/ChestItemsVBoxContainer")
+
+[node name="MarginContainer" type="MarginContainer" parent="InventoryUI/ChestInventoryContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="VBoxContainer" type="VBoxContainer" parent="InventoryUI/ChestInventoryContainer/MarginContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="InventoryUI/ChestInventoryContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 20
+
+[node name="PanelContainer" type="PanelContainer" parent="InventoryUI/ChestInventoryContainer/MarginContainer/VBoxContainer/MarginContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+theme = ExtResource("25_6ja6y")
+
+[node name="ChestContainerLabel" type="RichTextLabel" parent="InventoryUI/ChestInventoryContainer/MarginContainer/VBoxContainer/MarginContainer/PanelContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme = ExtResource("26_46h5h")
+bbcode_enabled = true
+text = "Container
+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MenuHeaderMarginContainer" type="MarginContainer" parent="InventoryUI/ChestInventoryContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme = SubResource("Theme_fbikn")
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="PanelContainer" type="PanelContainer" parent="InventoryUI/ChestInventoryContainer/MarginContainer/VBoxContainer/MenuHeaderMarginContainer"]
+layout_mode = 2
+theme = SubResource("Theme_w1xlv")
+
+[node name="MarginContainer" type="MarginContainer" parent="InventoryUI/ChestInventoryContainer/MarginContainer/VBoxContainer/MenuHeaderMarginContainer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 35
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 35
+theme_override_constants/margin_bottom = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="InventoryUI/ChestInventoryContainer/MarginContainer/VBoxContainer/MenuHeaderMarginContainer/PanelContainer/MarginContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="ItemInvAscDesc" type="TextureRect" parent="InventoryUI/ChestInventoryContainer/MarginContainer/VBoxContainer/MenuHeaderMarginContainer/PanelContainer/MarginContainer/HBoxContainer"]
+texture_filter = 2
+custom_minimum_size = Vector2(25, 25)
+layout_mode = 2
+texture = ExtResource("24_apvaj")
+expand_mode = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="InventoryUI/ChestInventoryContainer/MarginContainer/VBoxContainer/MenuHeaderMarginContainer/PanelContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="InventoryUI/ChestInventoryContainer/MarginContainer/VBoxContainer/MenuHeaderMarginContainer/PanelContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="ItemInvHealth" type="TextureRect" parent="InventoryUI/ChestInventoryContainer/MarginContainer/VBoxContainer/MenuHeaderMarginContainer/PanelContainer/MarginContainer/HBoxContainer/HBoxContainer"]
+texture_filter = 2
+custom_minimum_size = Vector2(25, 25)
+layout_mode = 2
+texture = ExtResource("25_apvaj")
+expand_mode = 1
+
+[node name="ItemInvAmount" type="TextureRect" parent="InventoryUI/ChestInventoryContainer/MarginContainer/VBoxContainer/MenuHeaderMarginContainer/PanelContainer/MarginContainer/HBoxContainer/HBoxContainer"]
+texture_filter = 2
+custom_minimum_size = Vector2(25, 25)
+layout_mode = 2
+texture = ExtResource("26_vr70r")
+expand_mode = 1
+
+[node name="ItemInvWeight" type="TextureRect" parent="InventoryUI/ChestInventoryContainer/MarginContainer/VBoxContainer/MenuHeaderMarginContainer/PanelContainer/MarginContainer/HBoxContainer/HBoxContainer"]
+texture_filter = 2
+custom_minimum_size = Vector2(25, 25)
+layout_mode = 2
+texture = ExtResource("27_fbikn")
+expand_mode = 1
+
+[node name="ItemInvType" type="TextureRect" parent="InventoryUI/ChestInventoryContainer/MarginContainer/VBoxContainer/MenuHeaderMarginContainer/PanelContainer/MarginContainer/HBoxContainer/HBoxContainer"]
+texture_filter = 2
+custom_minimum_size = Vector2(25, 25)
+layout_mode = 2
+texture = ExtResource("28_vr70r")
+expand_mode = 1
+
+[node name="ItemsContainerScrollContainer" type="ScrollContainer" parent="InventoryUI/ChestInventoryContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 20.0
+
+[node name="MarginContainer" type="MarginContainer" parent="InventoryUI/ChestInventoryContainer/MarginContainer/VBoxContainer/ItemsContainerScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 30
+
+[node name="ChestItemsVBoxContainer" type="VBoxContainer" parent="InventoryUI/ChestInventoryContainer/MarginContainer/VBoxContainer/ItemsContainerScrollContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="BottomMarginContainer" type="MarginContainer" parent="InventoryUI/ChestInventoryContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="InventoryUI/ChestInventoryContainer/MarginContainer/VBoxContainer/BottomMarginContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+alignment = 2
+
+[node name="InventoryWeightProgressBar" type="TextureProgressBar" parent="InventoryUI/ChestInventoryContainer/MarginContainer/VBoxContainer/BottomMarginContainer/HBoxContainer"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+value = 55.0
+nine_patch_stretch = true
+texture_under = ExtResource("27_46h5h")
+texture_over = ExtResource("28_oud5o")
+texture_progress = ExtResource("29_ks1l0")
+tint_under = Color(1, 1, 1, 0.5137255)
+
+[node name="InventoryWeightLabel" type="RichTextLabel" parent="InventoryUI/ChestInventoryContainer/MarginContainer/VBoxContainer/BottomMarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+theme_override_colors/default_color = Color(0.71958494, 0.61699843, 0.39838314, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6666667)
+theme_override_fonts/normal_font = ExtResource("32_lc28i")
+theme_override_font_sizes/normal_font_size = 22
+bbcode_enabled = true
+text = "20/50 Kg"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="InventoryContainer" type="PanelContainer" parent="InventoryUI" node_paths=PackedStringArray("SlotTemplate") groups=["inventory_container"]]
+unique_name_in_owner = true
+z_index = 30
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.509
+anchor_top = 0.059000004
+anchor_right = 0.84300005
+anchor_bottom = 0.93900007
+offset_left = -36.28003
+offset_top = 0.27999496
+offset_right = 2.4399414
+offset_bottom = -0.12005615
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_lc28i")
+script = ExtResource("24_r4q0o")
+SlotTemplate = NodePath("../DummyInvItemSlot")
+WorldItemScene = ExtResource("3_w1xlv")
+InventoryGridPath = NodePath("MarginContainer/VBoxContainer/ItemsScrollContainer/MarginContainer/ItemsVBoxContainer")
+
+[node name="MarginContainer" type="MarginContainer" parent="InventoryUI/InventoryContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="VBoxContainer" type="VBoxContainer" parent="InventoryUI/InventoryContainer/MarginContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="InventoryUI/InventoryContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 20
+
+[node name="PanelContainer" type="PanelContainer" parent="InventoryUI/InventoryContainer/MarginContainer/VBoxContainer/MarginContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+theme = ExtResource("25_6ja6y")
+
+[node name="BackpackLabel" type="RichTextLabel" parent="InventoryUI/InventoryContainer/MarginContainer/VBoxContainer/MarginContainer/PanelContainer"]
+layout_mode = 2
+theme = ExtResource("26_46h5h")
+bbcode_enabled = true
+text = "Inventory"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MenuHeaderMarginContainer" type="MarginContainer" parent="InventoryUI/InventoryContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme = SubResource("Theme_fbikn")
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="PanelContainer" type="PanelContainer" parent="InventoryUI/InventoryContainer/MarginContainer/VBoxContainer/MenuHeaderMarginContainer"]
+layout_mode = 2
+theme = SubResource("Theme_w1xlv")
+
+[node name="MarginContainer" type="MarginContainer" parent="InventoryUI/InventoryContainer/MarginContainer/VBoxContainer/MenuHeaderMarginContainer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 35
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 35
+theme_override_constants/margin_bottom = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="InventoryUI/InventoryContainer/MarginContainer/VBoxContainer/MenuHeaderMarginContainer/PanelContainer/MarginContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="ItemInvAscDesc" type="TextureRect" parent="InventoryUI/InventoryContainer/MarginContainer/VBoxContainer/MenuHeaderMarginContainer/PanelContainer/MarginContainer/HBoxContainer"]
+texture_filter = 2
+custom_minimum_size = Vector2(25, 25)
+layout_mode = 2
+texture = ExtResource("24_apvaj")
+expand_mode = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="InventoryUI/InventoryContainer/MarginContainer/VBoxContainer/MenuHeaderMarginContainer/PanelContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="InventoryUI/InventoryContainer/MarginContainer/VBoxContainer/MenuHeaderMarginContainer/PanelContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="ItemInvHealth" type="TextureRect" parent="InventoryUI/InventoryContainer/MarginContainer/VBoxContainer/MenuHeaderMarginContainer/PanelContainer/MarginContainer/HBoxContainer/HBoxContainer"]
+texture_filter = 2
+custom_minimum_size = Vector2(25, 25)
+layout_mode = 2
+texture = ExtResource("25_apvaj")
+expand_mode = 1
+
+[node name="ItemInvAmount" type="TextureRect" parent="InventoryUI/InventoryContainer/MarginContainer/VBoxContainer/MenuHeaderMarginContainer/PanelContainer/MarginContainer/HBoxContainer/HBoxContainer"]
+texture_filter = 2
+custom_minimum_size = Vector2(25, 25)
+layout_mode = 2
+texture = ExtResource("26_vr70r")
+expand_mode = 1
+
+[node name="ItemInvWeight" type="TextureRect" parent="InventoryUI/InventoryContainer/MarginContainer/VBoxContainer/MenuHeaderMarginContainer/PanelContainer/MarginContainer/HBoxContainer/HBoxContainer"]
+texture_filter = 2
+custom_minimum_size = Vector2(25, 25)
+layout_mode = 2
+texture = ExtResource("27_fbikn")
+expand_mode = 1
+
+[node name="ItemInvType" type="TextureRect" parent="InventoryUI/InventoryContainer/MarginContainer/VBoxContainer/MenuHeaderMarginContainer/PanelContainer/MarginContainer/HBoxContainer/HBoxContainer"]
+texture_filter = 2
+custom_minimum_size = Vector2(25, 25)
+layout_mode = 2
+texture = ExtResource("28_vr70r")
+expand_mode = 1
+
+[node name="ItemsScrollContainer" type="ScrollContainer" parent="InventoryUI/InventoryContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 20.0
+
+[node name="MarginContainer" type="MarginContainer" parent="InventoryUI/InventoryContainer/MarginContainer/VBoxContainer/ItemsScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 30
+
+[node name="ItemsVBoxContainer" type="VBoxContainer" parent="InventoryUI/InventoryContainer/MarginContainer/VBoxContainer/ItemsScrollContainer/MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="BottomMarginContainer" type="MarginContainer" parent="InventoryUI/InventoryContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="InventoryUI/InventoryContainer/MarginContainer/VBoxContainer/BottomMarginContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+alignment = 2
+
+[node name="InventoryWeightProgressBar" type="TextureProgressBar" parent="InventoryUI/InventoryContainer/MarginContainer/VBoxContainer/BottomMarginContainer/HBoxContainer"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+value = 55.0
+nine_patch_stretch = true
+texture_under = ExtResource("27_46h5h")
+texture_over = ExtResource("28_oud5o")
+texture_progress = ExtResource("29_ks1l0")
+tint_under = Color(1, 1, 1, 0.5137255)
+
+[node name="InventoryWeightLabel" type="RichTextLabel" parent="InventoryUI/InventoryContainer/MarginContainer/VBoxContainer/BottomMarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+theme_override_colors/default_color = Color(0.71958494, 0.61699843, 0.39838314, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6666667)
+theme_override_fonts/normal_font = ExtResource("32_lc28i")
+theme_override_font_sizes/normal_font_size = 22
+bbcode_enabled = true
+text = "20/50 Kg"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DummyEffectSlot" parent="InventoryUI" instance=ExtResource("18_uki5y")]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 1.026
+anchor_top = 0.84800005
+anchor_right = 1.1470001
+anchor_bottom = 0.93100005
+offset_left = 0.079956055
+offset_top = 0.15997314
+offset_right = -0.24023438
+offset_bottom = -37.48004
+grow_horizontal = 1
+grow_vertical = 1
+theme = ExtResource("32_sdedc")
+buff_effect = true
+EffectResourceRaw = ExtResource("33_lc28i")
+
+[node name="DummyEffectIcon" parent="InventoryUI" instance=ExtResource("18_pnp2g")]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.156
+anchor_top = 0.896
+anchor_right = 1.177
+anchor_bottom = 0.933
+offset_left = -0.52001953
+offset_top = 0.3199463
+offset_right = -0.8400879
+offset_bottom = 0.35998535
+grow_horizontal = 1
+grow_vertical = 1
+EffectResourceRaw = ExtResource("19_pnp2g")
+
+[node name="DummyInvItemSlot" parent="InventoryUI" instance=ExtResource("29_vr70r")]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 1971.0
+offset_top = 847.0
+offset_right = 2491.0
+offset_bottom = 898.0
+
+[node name="DummyButtonAction" parent="InventoryUI" instance=ExtResource("2_pnp2g")]
+unique_name_in_owner = true
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 1974.0
+offset_top = 800.0
+offset_right = 2224.0
+offset_bottom = 832.0
+UseInputMapKey = true
+ButtonActionRichTextLabel = "Hide Thermometer"
+
+[node name="Effects" type="PanelContainer" parent="InventoryUI"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.82900006
+anchor_top = 0.078
+anchor_right = 0.96500003
+anchor_bottom = 0.504
+offset_left = 0.3199463
+offset_top = -0.2400055
+offset_right = -0.8000488
+offset_bottom = -0.32000732
+theme = SubResource("Theme_pnp2g")
+
+[node name="EffectsVboxContainer" type="VBoxContainer" parent="InventoryUI/Effects"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="EffectsLabelPanelContainer" type="PanelContainer" parent="InventoryUI/Effects/EffectsVboxContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 1
+theme = ExtResource("25_6ja6y")
+
+[node name="EffectsLabel" type="RichTextLabel" parent="InventoryUI/Effects/EffectsVboxContainer/EffectsLabelPanelContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+theme = ExtResource("26_46h5h")
+bbcode_enabled = true
+text = "Effects"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="InventoryUI/Effects/EffectsVboxContainer"]
+custom_minimum_size = Vector2(0, 380)
+layout_mode = 2
+theme = SubResource("Theme_sdedc")
+follow_focus = true
+horizontal_scroll_mode = 3
+vertical_scroll_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="InventoryUI/Effects/EffectsVboxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 0
+
+[node name="EffectsList" type="VBoxContainer" parent="InventoryUI/Effects/EffectsVboxContainer/ScrollContainer/MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 10
