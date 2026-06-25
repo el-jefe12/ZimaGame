@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="OpenContainerAction" load_steps=2 format=3 uid="uid://ba5id83nulmok"]
+
+[ext_resource type="Script" uid="uid://c2e0vy1u8u1pp" path="res://data/ItemActions/OpenContainerAction.cs" id="1_wolq1"]
+
+[resource]
+script = ExtResource("1_wolq1")
+ActionName = "Open"
+HoldRequired = true
+metadata/_custom_type_script = "uid://c2e0vy1u8u1pp"

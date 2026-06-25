@@ -2,107 +2,204 @@ using Godot;
 
 public partial class WeaponHolder : Node3D
 {
-    private Node3D _currentModel;   // currently equipped weapon scene
-    private ItemInstance _currentItem;      // item resource that spawned the weapon
+    private enum EquipState
+    {
+        Empty = 0,
+        Idle = 1,
+        Drawing = 2,
+        Holstering = 3
+    }
 
-    private ItemInstance _pendingItem;      // weapon waiting to be equipped
+    private Node3D? _currentModel;
+    private ItemInstance? _currentItem;
 
-    private AnimationPlayer _anim;
+    // This is the item the hotbar currently wants equipped.
+    // It may be different from _currentItem while switching.
+    private ItemInstance? _desiredItem;
 
-    [Export] public Node3D WeaponSocket; // where the weapon model attaches (recommended)
+    private AnimationPlayer? _anim;
+    private Transform3D _weaponSocketRestTransform;
+
+    private EquipState _state = EquipState.Empty;
+
+    [Export] public Node3D? WeaponSocket;
+
+    public ItemInstance? CurrentItem => _currentItem;
+    public ItemInstance? DesiredItem => _desiredItem;
+
+    public bool IsSwitching =>
+        _state == EquipState.Drawing ||
+        _state == EquipState.Holstering;
 
     public override void _Ready()
     {
-        _anim = GetNode<AnimationPlayer>("%AnimationPlayer");
+        _anim = GetNodeOrNull<AnimationPlayer>("%AnimationPlayer");
+
+        if (_anim == null)
+        {
+            GD.PushError("WeaponHolder: AnimationPlayer not found.");
+            return;
+        }
+
         _anim.AnimationFinished += OnAnimationFinished;
 
-        // If a socket is not assigned in the inspector,
-        // fall back to using this node itself.
         if (WeaponSocket == null)
         {
-            GD.Print("WeaponHolder: WeaponSocket not assigned, using self");
+            GD.Print("WeaponHolder: WeaponSocket not assigned, using self.");
             WeaponSocket = this;
         }
+
+        _weaponSocketRestTransform = WeaponSocket.Transform;
     }
 
-    public void EquipItem(ItemInstance item)
+    public bool IsReadyForItem(ItemInstance? item)
     {
-        GD.Print("WeaponHolder: EquipItem called");
+        return _state == EquipState.Idle &&
+               _currentItem == item &&
+               _desiredItem == item &&
+               _currentModel != null &&
+               IsInstanceValid(_currentModel);
+    }
 
-        // If null item → unequip
+    public void EquipItem(ItemInstance? item)
+    {
+        GD.Print("WeaponHolder: EquipItem called.");
+
         if (item == null)
         {
-            GD.Print("WeaponHolder: item is NULL");
-            ClearItem();
+            ClearItem(true);
             return;
         }
 
-        GD.Print($"WeaponHolder: equipping {item.Definition.ItemName}");
-
-        // If the same instance is already equipped → replay draw animation
-        if (_currentItem == item && IsInstanceValid(_currentModel))
+        if (item.Definition == null)
         {
-            GD.Print("WeaponHolder: same item instance, replay draw animation");
-
-            _anim.Play("draw");
+            GD.PushError("WeaponHolder: item.Definition is NULL.");
             return;
         }
 
-        // Store the item we want to equip
-        _pendingItem = item;
+        GD.Print($"WeaponHolder: desired item is now {item.Definition.ItemName}");
 
-        // If a weapon exists → play holster first
-        if (_currentModel != null)
+        _desiredItem = item;
+
+        // Already holding the correct item and not switching.
+        if (_currentItem == _desiredItem &&
+            _currentModel != null &&
+            IsInstanceValid(_currentModel) &&
+            _state == EquipState.Idle)
         {
-            _anim.Play("holster");
             return;
         }
 
-        // Otherwise spawn immediately
-        SpawnPendingWeapon();
+        // If we are holstering, do NOT restart holster every time the player scrolls.
+        // Just update _desiredItem and let the current holster finish.
+        if (_state == EquipState.Holstering)
+            return;
+
+        // If the desired item is the same as the currently visible item while drawing,
+        // let the draw continue.
+        if (_state == EquipState.Drawing && _currentItem == _desiredItem)
+            return;
+
+        // If we are drawing the wrong item because the player switched again,
+        // interrupt and holster/remove it.
+        if (_state == EquipState.Drawing && _currentItem != _desiredItem)
+        {
+            StartHolster();
+            return;
+        }
+
+        // If there is a current model, holster it before spawning the desired item.
+        if (_currentModel != null && IsInstanceValid(_currentModel))
+        {
+            StartHolster();
+            return;
+        }
+
+        // No model currently visible, so spawn desired immediately.
+        SpawnDesiredWeapon();
     }
 
     public void ClearItem(bool playAnimation = true)
     {
-        GD.Print("WeaponHolder: ClearItem called");
+        GD.Print("WeaponHolder: ClearItem called.");
 
-        if (_currentModel != null)
+        _desiredItem = null;
+
+        if (_currentModel != null && IsInstanceValid(_currentModel))
         {
             if (playAnimation)
             {
-                _anim.Play("holster");
-                _pendingItem = null;
+                StartHolster();
                 return;
             }
 
-            // instant removal (used when throwing)
-            if (IsInstanceValid(_currentModel))
-                _currentModel.QueueFree();
-
-            _currentModel = null;
+            RemoveCurrentWeaponInstantly();
         }
 
         _currentItem = null;
+        _state = EquipState.Empty;
+
+        StopAnimationAndResetSocket();
     }
 
-    private void SpawnPendingWeapon()
+    private void StartHolster()
     {
-        if (_pendingItem == null)
+        if (_currentModel == null || !IsInstanceValid(_currentModel))
+        {
+            RemoveCurrentWeaponInstantly();
+            _currentItem = null;
+            _state = EquipState.Empty;
+
+            if (_desiredItem != null)
+                SpawnDesiredWeapon();
+
+            return;
+        }
+
+        // Prevent fast switching from constantly restarting holster.
+        if (_state == EquipState.Holstering)
             return;
 
-        ItemInstance item = _pendingItem;
-        _pendingItem = null;
+        _state = EquipState.Holstering;
+        PlayAnimationImmediately("holster");
+    }
 
-        _currentItem = item;
+    private void SpawnDesiredWeapon()
+    {
+        if (_desiredItem == null)
+        {
+            _currentItem = null;
+            _state = EquipState.Empty;
+            StopAnimationAndResetSocket();
+            return;
+        }
 
-        // Item definition contains the static data
+        if (WeaponSocket == null)
+        {
+            GD.PushError("WeaponHolder: WeaponSocket is NULL.");
+            return;
+        }
+
+        StopAnimationAndResetSocket();
+
+        ItemInstance item = _desiredItem;
+
+        if (item.Definition == null)
+        {
+            GD.PushError("WeaponHolder: desired item has NULL Definition.");
+            _currentItem = null;
+            _state = EquipState.Empty;
+            return;
+        }
+
         Item def = item.Definition;
-
-        PackedScene scene = def.WorldModel;
+        PackedScene? scene = def.WorldModel;
 
         if (scene == null)
         {
-            GD.Print($"WeaponHolder: {def.ItemName} has NULL WorldModel");
+            GD.Print($"WeaponHolder: {def.ItemName} has NULL WorldModel.");
+            _currentItem = null;
+            _state = EquipState.Empty;
             return;
         }
 
@@ -112,84 +209,132 @@ public partial class WeaponHolder : Node3D
 
         if (instance == null)
         {
-            GD.PushError("WeaponHolder: scene.Instantiate() returned NULL");
+            GD.PushError("WeaponHolder: scene.Instantiate() returned NULL.");
+            _currentItem = null;
+            _state = EquipState.Empty;
             return;
         }
 
-        Node3D modelRoot = instance as Node3D;
-
-        if (modelRoot == null)
+        if (instance is not Node3D modelRoot)
         {
-            GD.PushError("WeaponHolder: weapon scene root must be Node3D");
+            GD.PushError("WeaponHolder: weapon scene root must be Node3D.");
             instance.QueueFree();
+            _currentItem = null;
+            _state = EquipState.Empty;
             return;
         }
 
-        // Attach weapon to the socket
+        modelRoot.Visible = false;
+
         WeaponSocket.AddChild(modelRoot);
 
-        // Classic FPS placement (adjust per weapon later if needed)
         modelRoot.Position = def.ModelPosition;
         modelRoot.RotationDegrees = def.ModelRotation;
+        modelRoot.Scale = def.ModelScale;
 
-        // Force weapon visuals onto layer 2 so a dedicated camera can render it
         SetVisualLayersRecursive(modelRoot, 2);
 
         _currentModel = modelRoot;
+        _currentItem = item;
 
-        GD.Print("WeaponHolder: weapon equipped successfully");
+        GD.Print($"WeaponHolder: weapon equipped visually: {def.ItemName}");
 
-        PrintTreeRecursive(_currentModel, 0);
+        _state = EquipState.Drawing;
 
-        // Play draw animation
-        _anim.Play("draw");
+        PlayAnimationImmediately("draw");
+
+        modelRoot.Visible = true;
     }
 
     private void OnAnimationFinished(StringName animName)
     {
-        GD.Print($"WeaponHolder: animation finished {animName}");
+        string finishedAnimationName = animName.ToString();
 
-        if (animName == "holster")
+        GD.Print($"WeaponHolder: animation finished {finishedAnimationName}");
+
+        if (finishedAnimationName == "holster")
         {
-            // Remove current weapon
-            if (_currentModel != null)
-            {
-                if (IsInstanceValid(_currentModel))
-                    _currentModel.QueueFree();
+            RemoveCurrentWeaponInstantly();
+            _currentItem = null;
 
-                _currentModel = null;
+            StopAnimationAndResetSocket();
+
+            if (_desiredItem != null)
+            {
+                SpawnDesiredWeapon();
+                return;
             }
 
-            // If we were switching weapons → spawn the next one
-            if (_pendingItem != null)
-                SpawnPendingWeapon();
+            _state = EquipState.Empty;
+            return;
         }
+
+        if (finishedAnimationName == "draw")
+        {
+            // If the player switched again during draw, immediately holster this now-wrong model.
+            if (_currentItem != _desiredItem)
+            {
+                StartHolster();
+                return;
+            }
+
+            _state = EquipState.Idle;
+        }
+    }
+
+    private void RemoveCurrentWeaponInstantly()
+    {
+        if (_currentModel != null && IsInstanceValid(_currentModel))
+        {
+            Node? parent = _currentModel.GetParent();
+
+            if (parent != null)
+                parent.RemoveChild(_currentModel);
+
+            _currentModel.QueueFree();
+        }
+
+        _currentModel = null;
+    }
+
+    private void StopAnimationAndResetSocket()
+    {
+        if (_anim != null)
+            _anim.Stop();
+
+        ResetSocketToRestTransform();
+    }
+
+    private void ResetSocketToRestTransform()
+    {
+        if (WeaponSocket == null)
+            return;
+
+        WeaponSocket.Transform = _weaponSocketRestTransform;
+    }
+
+    private void PlayAnimationImmediately(string animationName)
+    {
+        if (_anim == null)
+            return;
+
+        if (!_anim.HasAnimation(animationName))
+        {
+            GD.PushWarning($"WeaponHolder: Animation '{animationName}' does not exist.");
+            return;
+        }
+
+        _anim.Stop();
+        _anim.Play(animationName);
+        _anim.Advance(0.0);
     }
 
     private void SetVisualLayersRecursive(Node node, uint layerMask)
     {
-        // Any renderable node (MeshInstance3D, etc.)
         if (node is VisualInstance3D visual)
-        {
             visual.Layers = layerMask;
-            GD.Print($"WeaponHolder: set layer on {node.Name} -> {layerMask}");
-        }
 
         foreach (Node child in node.GetChildren())
             SetVisualLayersRecursive(child, layerMask);
-    }
-
-    private void PrintTreeRecursive(Node node, int depth)
-    {
-        // Debug helper to print the full structure of the spawned weapon
-        string indent = "";
-
-        for (int i = 0; i < depth; i++)
-            indent += "  ";
-
-        GD.Print($"{indent}- {node.Name} [{node.GetType().Name}]");
-
-        foreach (Node child in node.GetChildren())
-            PrintTreeRecursive(child, depth + 1);
     }
 }

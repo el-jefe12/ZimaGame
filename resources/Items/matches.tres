@@ -1,8 +1,10 @@
-[gd_resource type="Resource" script_class="Item" load_steps=5 format=3 uid="uid://chgkujhqjgjw5"]
+[gd_resource type="Resource" script_class="Item" load_steps=7 format=3 uid="uid://chgkujhqjgjw5"]
 
 [ext_resource type="Script" uid="uid://2ofxdkbacdjx" path="res://data/ItemAction.cs" id="1_f50kg"]
 [ext_resource type="Script" uid="uid://m2f7h5b81nkv" path="res://data/Item.cs" id="2_2eesc"]
 [ext_resource type="Texture2D" uid="uid://b3113kyppv8o" path="res://gfx/UI/gameUI/effects/effect_too_hot.png" id="2_2huya"]
+[ext_resource type="Resource" uid="uid://ba5id83nulmok" path="res://resources/Items/ItemsActions/ItemOpenContainer/OpenContainerAction_matches.tres" id="2_rc4e3"]
+[ext_resource type="Resource" uid="uid://7dqah56oj4yb" path="res://resources/Items/ContainerData/ContainerData_box_of_matches.tres" id="2_taknt"]
 [ext_resource type="PackedScene" uid="uid://dge5s82ou32k6" path="res://models/player/tools/box_of_matches/matches.tscn" id="3_taknt"]
 
 [resource]
@@ -12,7 +14,11 @@ WorldModel = ExtResource("3_taknt")
 Icon = ExtResource("2_2huya")
 ModelPosition = Vector3(0.0656541, 0, -0.010874867)
 ModelRotation = Vector3(-8.7, 5.7, -66.8)
-Item_Type = 2
-Item_SubType = 5
+ModelScale = Vector3(2.5, 2.5, 2.5)
+WorldModelScale = Vector3(2, 2, 2)
+Item_Type = 1
+Item_SubType = 4
 ItemWeight = 0.5
+ContainerData = ExtResource("2_taknt")
+Actions = Array[ExtResource("1_f50kg")]([ExtResource("2_rc4e3")])
 metadata/_custom_type_script = "uid://m2f7h5b81nkv"

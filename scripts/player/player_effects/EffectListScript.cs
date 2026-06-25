@@ -1,22 +1,20 @@
-using Godot;
-using System;
 using System.Collections.Generic;
-
+using Godot;
 
 public partial class EffectListScript : Node
 {
+	public static EffectListScript? Instance { get; private set; }
 
-	public static EffectListScript Instance { get; private set; }
-    public List<Effect> EffectsList { get; set; } = new();
+	public List<Effect> EffectsList { get; private set; } = new();
 
-    [Export(PropertyHint.Dir)]
-    public string EffectsFolder = "res://Effects";
+	[ExportCategory("Export-safe Effect List")]
+	[Export] public Godot.Collections.Array<Effect> ExportedEffects { get; set; } = new();
 
-    // Called automatically when the node enters the scene tree.
-    public override void _Ready()
-    {
-       LoadAllEffects(EffectsFolder);
-    }
+	[ExportCategory("Optional Folder Fallback")]
+	[Export(PropertyHint.Dir)]
+	public string EffectsFolder { get; set; } = "res://Effects";
+
+	private bool _loaded = false;
 
 	public override void _EnterTree()
 	{
@@ -25,72 +23,155 @@ public partial class EffectListScript : Node
 
 	public override void _ExitTree()
 	{
-		if (Instance == this) Instance = null;
+		if (Instance == this)
+		{
+			Instance = null;
+		}
 	}
 
-    // Recursively loads all Effect resources from the given folder.
-    private void LoadAllEffects(string folder)
-    {
-        // Clear the list so we don't duplicate entries
-        // if this method is called multiple times.
-        EffectsList.Clear();
+	public override void _Ready()
+	{
+		ReloadEffects();
+	}
 
-        // Try to open the directory.
-        var dir = DirAccess.Open(folder);
+	public void EnsureLoaded()
+	{
+		if (_loaded && EffectsList.Count > 0)
+		{
+			return;
+		}
 
-        // If the folder cannot be opened, print an error and stop.
-        if (dir == null)
-        {
-            GD.PushError($"EffectDatabase: Cannot open folder: {folder}");
-            return;
-        }
+		ReloadEffects();
+	}
 
-        // Start iterating through the directory contents.
-        dir.ListDirBegin();
+	public void ReloadEffects()
+	{
+		EffectsList.Clear();
 
-        while (true)
-        {
-            // Get the next file or folder name.
-            var fileName = dir.GetNext();
+		LoadExportedEffects();
 
-            // When there is nothing left, GetNext() returns an empty string.
-            if (fileName == "")
-                break;
+		// Folder fallback only if exported array is empty.
+		// In exported builds, folder scanning can be unreliable, so exported array is preferred.
+		if (EffectsList.Count == 0)
+		{
+			LoadEffectsRecursive(EffectsFolder);
+		}
 
-            // If the current item is a directory, we go into it (recursion).
-            if (dir.CurrentIsDir())
-            {
-                // Skip the special entries "." and ".."
-                if (fileName != "." && fileName != "..")
-                    LoadAllEffects($"{folder}/{fileName}");
+		_loaded = true;
 
-                continue;
-            }
+		GD.Print($"EffectDatabase: Total loaded effects = {EffectsList.Count}");
+		PrintLoadedEffectsDebug();
+	}
 
-            // We only want resource files.
-            // Ignore anything that is not .tres or .res.
-            if (!fileName.EndsWith(".tres") && !fileName.EndsWith(".res"))
-                continue;
+	private void LoadExportedEffects()
+	{
+		foreach (Effect effect in ExportedEffects)
+		{
+			if (effect == null)
+			{
+				continue;
+			}
 
-            // Build the full path to the file.
-            var path = $"{folder}/{fileName}";
+			if (!EffectsList.Contains(effect))
+			{
+				EffectsList.Add(effect);
+			}
+		}
 
-            // Load the resource from disk.
-            var res = ResourceLoader.Load(path);
+		GD.Print($"EffectDatabase: Loaded {EffectsList.Count} effects from ExportedEffects.");
+	}
 
-            // Check if the loaded resource is actually an Effect.
-            if (res is Effect effect)
-            {
-                // Add it to our runtime list.
-                EffectsList.Add(effect);
-				GD.Print($"Effect [{effect.EffectName}] added from {EffectsFolder}");
-            }
-        }
+	private void LoadEffectsRecursive(string folder)
+	{
+		DirAccess? dir = DirAccess.Open(folder);
 
-        // Stop directory iteration (good practice / frees handles).
-        dir.ListDirEnd();
+		if (dir == null)
+		{
+			GD.PushWarning($"EffectDatabase: Cannot open folder fallback: {folder}");
+			return;
+		}
 
-        // Print how many effects were loaded (for debugging).
-        GD.Print($"EffectDatabase loaded {EffectsList.Count} effects from {EffectsFolder}");
-    }
+		dir.ListDirBegin();
+
+		while (true)
+		{
+			string fileName = dir.GetNext();
+
+			if (string.IsNullOrEmpty(fileName))
+			{
+				break;
+			}
+
+			if (fileName == "." || fileName == "..")
+			{
+				continue;
+			}
+
+			string path = $"{folder}/{fileName}";
+
+			if (dir.CurrentIsDir())
+			{
+				LoadEffectsRecursive(path);
+				continue;
+			}
+
+			if (!fileName.EndsWith(".tres") && !fileName.EndsWith(".res"))
+			{
+				continue;
+			}
+
+			Resource? resource = ResourceLoader.Load(path);
+
+			if (resource is not Effect effect)
+			{
+				GD.Print($"EffectDatabase: Skipped non-Effect resource: {path}");
+				continue;
+			}
+
+			if (!EffectsList.Contains(effect))
+			{
+				EffectsList.Add(effect);
+			}
+
+			GD.Print(
+				$"EffectDatabase: Loaded '{effect.EffectName}' " +
+				$"Type={effect.Type}, Severity={effect.EffectSeverity}, Id='{effect.EffectId}' from {path}"
+			);
+		}
+
+		dir.ListDirEnd();
+	}
+
+	private void PrintLoadedEffectsDebug()
+	{
+		GD.Print("========== LOADED EFFECTS ==========");
+
+		foreach (Effect effect in EffectsList)
+		{
+			if (effect == null)
+			{
+				GD.Print("Effect: NULL");
+				continue;
+			}
+
+			string iconPath = effect.Icon == null
+				? "NULL"
+				: effect.Icon.ResourcePath;
+
+			int modifierCount = effect.Modifiers == null
+				? 0
+				: effect.Modifiers.Count;
+
+			GD.Print(
+				$"Effect: Name='{effect.EffectName}', " +
+				$"Type={effect.Type}, " +
+				$"Severity={effect.EffectSeverity} ({(int)effect.EffectSeverity}), " +
+				$"Id='{effect.EffectId}', " +
+				$"Modifiers={modifierCount}, " +
+				$"Icon='{iconPath}'"
+			);
+		}
+
+		GD.Print("====================================");
+	}
 }

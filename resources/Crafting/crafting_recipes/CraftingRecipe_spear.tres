@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="CraftingRecipeResource" load_steps=5 format=3 uid="uid://c4ijlov7pfdve"]
+
+[ext_resource type="Script" uid="uid://m2f7h5b81nkv" path="res://data/Item.cs" id="1_ai5yi"]
+[ext_resource type="Script" uid="uid://dgcu3qqr25gu6" path="res://data/crafting/CraftingRecipeResource.cs" id="2_8ukin"]
+[ext_resource type="Resource" uid="uid://cpbrae4g133sh" path="res://resources/Items/match.tres" id="2_pscs1"]
+[ext_resource type="Resource" uid="uid://dtbc4fowv568k" path="res://resources/Items/spear.tres" id="3_wm6sx"]
+
+[resource]
+script = ExtResource("2_8ukin")
+Ingredients = Array[ExtResource("1_ai5yi")]([ExtResource("2_pscs1"), ExtResource("2_pscs1")])
+ResultItem = ExtResource("3_wm6sx")
+metadata/_custom_type_script = "uid://dgcu3qqr25gu6"

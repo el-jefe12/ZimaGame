@@ -15,6 +15,11 @@ script = ExtResource("1_mqh5l")
 BackgroundFadeDuration = 0.0
 TitleDelayAfterBlack = 0.35
 TitleFadeDuration = 0.2
+RestartInputAction = "game_restart_game"
+MainMenuInputAction = "game_go_to_main_menu"
+RestartScenePath = "uid://b562tptc77ge7"
+MainMenuScenePath = "uid://d1xdaa15r8yf2"
+LoadingScreenScenePath = "uid://dw1p5abmdpbob"
 
 [node name="ColorBackground" type="ColorRect" parent="."]
 layout_mode = 1
@@ -72,6 +77,7 @@ vertical_alignment = 1
 
 [node name="DaysSurvivedLabel" type="RichTextLabel" parent="DeadContainer"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 theme_override_fonts/normal_font = ExtResource("1_dwo6e")
 theme_override_font_sizes/normal_font_size = 40

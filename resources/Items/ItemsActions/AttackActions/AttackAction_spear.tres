@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="AttackAction" load_steps=2 format=3 uid="uid://8jtcx6qgco2g"]
+
+[ext_resource type="Script" uid="uid://cbhkf2fbp326w" path="res://data/ItemActions/AttackAction.cs" id="1_opaps"]
+
+[resource]
+script = ExtResource("1_opaps")
+AnimationPlayerPath = NodePath("PlayerHead/yawPivot/pitchPivot/WeaponsHolder/AnimationPlayer")
+AttackRaycastPath = NodePath("PlayerHead/yawPivot/pitchPivot/ViewRayCast3D")
+AttackAnimationName = "spear_attack_light"
+Damage = 0.0
+AttackCooldown = 1.0
+RequireAnimationPlayer = true
+InputActionName = "game_attack"
+metadata/_custom_type_script = "uid://cbhkf2fbp326w"

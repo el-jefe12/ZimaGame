@@ -23,10 +23,10 @@
 [ext_resource type="Resource" uid="uid://cc4ys3yuf0f6h" path="res://resources/Items/water_bottle.tres" id="17_ke2ow"]
 [ext_resource type="Resource" uid="uid://w70e7n8npycj" path="res://resources/Items/knife.tres" id="18_ujl30"]
 [ext_resource type="Resource" uid="uid://chgkujhqjgjw5" path="res://resources/Items/matches.tres" id="19_31cv2"]
-[ext_resource type="Resource" uid="uid://stum0rvnvcrk" path="res://resources/Items/survival_book.tres" id="20_l71n6"]
 [ext_resource type="Resource" uid="uid://dtbc4fowv568k" path="res://resources/Items/spear.tres" id="21_ke2ow"]
-[ext_resource type="Resource" uid="uid://cpbrae4g133sh" path="res://resources/Items/match.tres" id="22_ujl30"]
+[ext_resource type="Resource" uid="uid://cmg5fy1vui747" path="res://resources/Items/energy_drink.tres" id="22_31cv2"]
 [ext_resource type="Resource" uid="uid://cx5eubxgvockq" path="res://resources/Items/beans_can.tres" id="23_31cv2"]
+[ext_resource type="Script" uid="uid://xasodsum051x" path="res://scripts/player/player_effects/PlayerEffects.cs" id="27_pf23h"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_g2els"]
 
@@ -147,7 +147,7 @@ SprintBobPosAmplitude = 0.08
 [node name="Inventory" type="Node3D" parent="PlayerScriptsAttached"]
 unique_name_in_owner = true
 script = ExtResource("7_fjrip")
-StartingItems = Array[ExtResource("16_l71n6")]([ExtResource("17_ke2ow"), ExtResource("18_ujl30"), ExtResource("19_31cv2"), ExtResource("20_l71n6"), ExtResource("21_ke2ow"), ExtResource("22_ujl30"), ExtResource("22_ujl30"), ExtResource("22_ujl30"), ExtResource("23_31cv2")])
+StartingItems = Array[ExtResource("16_l71n6")]([ExtResource("17_ke2ow"), ExtResource("18_ujl30"), ExtResource("19_31cv2"), ExtResource("21_ke2ow"), ExtResource("23_31cv2"), ExtResource("22_31cv2"), ExtResource("22_31cv2")])
 
 [node name="PlayerPush" type="Node3D" parent="PlayerScriptsAttached"]
 unique_name_in_owner = true
@@ -164,7 +164,12 @@ _player = NodePath("../..")
 StatusOverlay = NodePath("../../PlayerHead/yawPivot/pitchPivot/cameraBob/CharacterCamera3D/PlayerUICanvasLayer/EffectOverlay")
 GroundRayStartHeight = 5.0
 GroundRayLength = 10.0
+MinimumDamageDepth = 0.85
 ScaleFreezingEffectWithDepth = true
+
+[node name="PlayerEffects" type="Node3D" parent="PlayerScriptsAttached"]
+unique_name_in_owner = true
+script = ExtResource("27_pf23h")
 
 [node name="Feet" type="Node3D" parent="."]
 

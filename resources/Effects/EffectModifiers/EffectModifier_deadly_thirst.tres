@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="EffectModifier" load_steps=2 format=3 uid="uid://caks61xgn8fj4"]
+
+[ext_resource type="Script" uid="uid://bve4fsoq0q8pi" path="res://data/effect/EffectModifier.cs" id="1_slnsf"]
+
+[resource]
+script = ExtResource("1_slnsf")
+Timing = 1
+Value = -2.0
+Priority = 5
+metadata/_custom_type_script = "uid://bve4fsoq0q8pi"

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="Item" load_steps=5 format=3 uid="uid://b0slfu10mk406"]
+
+[ext_resource type="Script" uid="uid://2ofxdkbacdjx" path="res://data/ItemAction.cs" id="1_b6s8v"]
+[ext_resource type="Script" uid="uid://m2f7h5b81nkv" path="res://data/Item.cs" id="2_tmpaj"]
+[ext_resource type="Texture2D" uid="uid://bn1m8tjv3hfhn" path="res://gfx/UI/gameUI/inventory/sort/inv_health.png" id="2_wytpa"]
+[ext_resource type="PackedScene" uid="uid://dwitv0d7b7j5q" path="res://models/player/items/materials/wood/branch.tscn" id="3_arfms"]
+
+[resource]
+script = ExtResource("2_tmpaj")
+ItemName = "Tree Branch"
+WorldModel = ExtResource("3_arfms")
+Icon = ExtResource("2_wytpa")
+Item_Type = 2
+Item_SubType = 5
+ItemWeight = 0.3
+metadata/_custom_type_script = "uid://m2f7h5b81nkv"

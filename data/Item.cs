@@ -21,40 +21,55 @@ public partial class Item : Resource
         crafting_material
     }
 
-    //[ExportCategory($"")]
-    [Export] public string ItemName;
+    [ExportCategory("Basic Info")]
+    [Export] public string ItemName = "";
 
-    // Scene containing mesh + collision
-    [Export] public PackedScene WorldModel;
+    // Scene containing mesh + collision.
+    // This can be reused for world pickup, held model, and UI preview.
+    [Export] public PackedScene? WorldModel;
 
     [ExportCategory("Item Icon")]
-    [Export] public Texture2D Icon;
-    [Export] Vector2I Icon_dimensions = new Vector2I(1, 1);
+    [Export] public Texture2D? Icon;
+    [Export] public Vector2I Icon_dimensions = new Vector2I(1, 1);
 
+    [ExportCategory("Held Model Transform")]
+
+    // Transform used when the item is attached to the player's WeaponSocket.
     [Export] public Vector3 ModelPosition = new Vector3(0f, 0f, 0f);
     [Export] public Vector3 ModelRotation = new Vector3(0f, 0f, 0f);
+    [Export] public Vector3 ModelScale = new Vector3(1f, 1f, 1f);
+
+    [ExportCategory("World Pickup Transform")]
+
+    // Transform used when the item exists physically in the world as a pickup/drop.
+    [Export] public Vector3 WorldModelPosition = new Vector3(0f, 0f, 0f);
+    [Export] public Vector3 WorldModelRotation = new Vector3(0f, 0f, 0f);
+    [Export] public Vector3 WorldModelScale = new Vector3(1f, 1f, 1f);
 
     [ExportCategory("Item Scripting")]
+    [Export] public Script? ItemScript;
 
-    [Export] public Script ItemScript;
-
-    [Export] public ItemType Item_Type; // Specifies the main type of the item (consumable, tool, material)
-
-    [Export] public ItemSubType Item_SubType; // Specifies what kind of item it is in more detail, as in what it affects mainly (hunger, thirst, health, tired), or if it is a tool. 
-                                            // crafting material is for now an all encompassing subtype for materials used in crafting, which may have various effects and uses.
+    [Export] public ItemType Item_Type;
+    [Export] public ItemSubType Item_SubType;
 
     [ExportCategory("Item Values")]
-
     [Export] public float ItemHealth = 100f;
     [Export] public float ItemWeight = 0f;
-    [Export] public float ItemAmount = 1; // always 1
+
+    // Usually 1 for normal item instances.
+    [Export] public float ItemAmount = 1f;
 
     [ExportCategory("Data")]
-    // Optional behaviour data
-    [Export] public ItemConsumableData ConsumableData;
-    //[Export] public ItemToolData Tool;
+
+    // Optional consumable behaviour.
+    [Export] public ItemConsumableData? ConsumableData;
+
+    // Optional container behaviour.
+    // If this is null, the item is not a container.
+    [Export] public ItemContainerData? ContainerData;
 
     [ExportCategory("List of Actions")]
-    // List of actions
+
+    // List of actions the item can perform.
     [Export] public Godot.Collections.Array<ItemAction> Actions = new();
 }

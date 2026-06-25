@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CraftingBookPageResource" load_steps=3 format=3 uid="uid://bd6048ur5epnk"]
+
+[ext_resource type="Resource" uid="uid://ddmaei0nkrdik" path="res://resources/Crafting/crafting_recipes/CraftingRecipe_shelter.tres" id="1_jrcei"]
+[ext_resource type="Script" uid="uid://cp74dd8j22inl" path="res://data/crafting/CraftingBookPageResource.cs" id="1_vnojy"]
+
+[resource]
+script = ExtResource("1_vnojy")
+DisplayName = "Shelter"
+Description = "Protects you from rain and keeps you warm."
+Recipe = ExtResource("1_jrcei")
+metadata/_custom_type_script = "uid://cp74dd8j22inl"

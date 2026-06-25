@@ -8,4 +8,5 @@ script = ExtResource("1_mk4q1")
 OpenScene = ExtResource("1_7hnkc")
 ActionName = "Open"
 InputActionName = "game_use_item_mid"
+HoldRequired = true
 metadata/_custom_type_script = "uid://bbmfwdu1wfcvd"

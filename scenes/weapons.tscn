@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://3iqnsh7wlndi"]
+[gd_scene load_steps=16 format=3 uid="uid://3iqnsh7wlndi"]
 
 [ext_resource type="Script" uid="uid://ccpswdi8wasf5" path="res://scripts/player/weapons/WeaponHolder.cs" id="1_jq0ys"]
 [ext_resource type="PackedScene" uid="uid://dge5s82ou32k6" path="res://models/player/tools/box_of_matches/matches.tscn" id="2_ka8gl"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://dbl7xe7sy63pf" path="res://models/player/tools/survival_book/survival_book.tscn" id="3_pe4jq"]
 [ext_resource type="PackedScene" uid="uid://bacrv272654oi" path="res://models/player/tools/knife/knife.tscn" id="4_0ccn8"]
 [ext_resource type="PackedScene" uid="uid://cj0kbq0vd75yo" path="res://models/player/items/bottle/water_bottle.tscn" id="5_oqpq1"]
+[ext_resource type="PackedScene" uid="uid://dyxvmxlk5tbu" path="res://models/player/tools/spear/spear_test.tscn" id="6_acacc"]
 
 [sub_resource type="Animation" id="Animation_0ccn8"]
 length = 0.001
@@ -24,34 +25,10 @@ tracks/0/keys = {
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("WeaponSocket/knife:position")
+tracks/1/path = NodePath("WeaponSocket:rotation")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector3(0, 0.108000666, 0)]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("WeaponSocket/knife:rotation")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector3(-0.067431256, -2.668017, 1.2402885)]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("WeaponSocket:rotation")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
@@ -145,13 +122,69 @@ tracks/1/keys = {
 "values": [Vector3(0.08224339, -1.8342017, 0.015959036)]
 }
 
+[sub_resource type="Animation" id="Animation_3f17w"]
+resource_name = "spear_idle"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("WeaponSocket:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0.4214561, -0.37461728, -0.49442077), Vector3(0.4214561, -0.37461728, -0.49442077)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("WeaponSocket:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0.08224339, -1.8342017, 0.015959036), Vector3(0.08224339, -1.8342017, 0.015959036)]
+}
+
+[sub_resource type="Animation" id="Animation_tigg3"]
+resource_name = "spear_attack"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("WeaponSocket:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5, 0.75, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0.4214561, -0.37461728, -0.49442077), Vector3(0.4214561, -0.3561879, -0.24778372), Vector3(0.4214561, -0.4423859, -0.5454098), Vector3(0.4214561, -0.4085016, -0.5670302), Vector3(0.4214561, -0.37461728, -0.49442077)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("WeaponSocket:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5, 0.75, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0.08224339, -1.8342017, 0.015959036), Vector3(0.016494034, -1.8459761, -0.22139332), Vector3(0.24806371, -1.6922779, 0.8296272), Vector3(0.18106236, -1.7703286, 0.44840252), Vector3(0.08224339, -1.8342017, 0.015959036)]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_oqpq1"]
 _data = {
 &"RESET": SubResource("Animation_0ccn8"),
 &"draw": SubResource("Animation_ka8gl"),
 &"holster": SubResource("Animation_pe4jq"),
 &"knife_attack": SubResource("Animation_oqpq1"),
-&"knife_idle": SubResource("Animation_acacc")
+&"knife_idle": SubResource("Animation_acacc"),
+&"spear_attack_light": SubResource("Animation_tigg3"),
+&"spear_idle": SubResource("Animation_3f17w")
 }
 
 [node name="Weapons" type="Node3D" node_paths=PackedStringArray("WeaponSocket")]
@@ -160,7 +193,7 @@ WeaponSocket = NodePath("WeaponSocket")
 
 [node name="WeaponSocket" type="Node3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(-0.26160258, -0.075152054, -0.9622454, 0.015904417, 0.99649286, -0.0821507, 0.9650447, -0.03679478, -0.25948986, 0.4214561, -0.37461728, -0.49442077)
+transform = Transform3D(-0.2616027, -0.07515207, -0.9622452, 0.015904425, 0.99649304, -0.08215068, 0.96504515, -0.03679479, -0.25948983, 0.4214561, -0.37461728, -0.49442077)
 
 [node name="matches" parent="WeaponSocket" instance=ExtResource("2_ka8gl")]
 transform = Transform3D(0.40545207, 0.90879595, 0.09848, -0.9087961, 0.38914004, 0.15053162, 0.09847999, -0.15053159, 0.9836878, 0.0656541, 0, -0.010874867)
@@ -176,6 +209,10 @@ visible = false
 
 [node name="bottle" parent="WeaponSocket" instance=ExtResource("5_oqpq1")]
 transform = Transform3D(0.7232017, 0.020531446, -0.6903311, -0.015822496, 0.9997881, 0.013159227, 0.6904553, 0.0014059846, 0.7233734, 0.047337472, -0.14268142, -0.0014876425)
+visible = false
+
+[node name="spear_test" parent="WeaponSocket" instance=ExtResource("6_acacc")]
+transform = Transform3D(0.33965412, -0.93428147, 0.108413085, 0.93413436, 0.32164827, -0.15471038, 0.10967216, 0.15382044, 0.9819935, 0.6177014, 0, -0.10231516)
 visible = false
 
 [node name="WeaponViewpointContainer" type="SubViewportContainer" parent="." node_paths=PackedStringArray("WeaponCamera")]

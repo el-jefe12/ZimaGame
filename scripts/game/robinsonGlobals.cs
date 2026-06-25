@@ -23,6 +23,24 @@ public partial class robinsonGlobals : Node
 		player_inv_and_container = 1
 	}
 
+	private bool _forceNextMainMenuMode = false;
+
+	public void ForceNextMainMenuAsMainMenu()
+	{
+		_forceNextMainMenuMode = true;
+	}
+
+	public bool ConsumeForceNextMainMenuAsMainMenu()
+	{
+		bool value = _forceNextMainMenuMode;
+		_forceNextMainMenuMode = false;
+		return value;
+	}
+
+	public InventoryType CurrentInventoryType { get; set; } = InventoryType.player_inventory;
+
+	public ItemInstance? OpenContainerItem { get; set; } = null;
+
 	// Current player reference
 	public PlayerController? Player { get; private set; }
 

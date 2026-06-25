@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CraftingBookPageResource" load_steps=3 format=3 uid="uid://b1g2y2qlskll8"]
+
+[ext_resource type="Script" uid="uid://cp74dd8j22inl" path="res://data/crafting/CraftingBookPageResource.cs" id="1_73pe4"]
+[ext_resource type="Resource" uid="uid://c4ijlov7pfdve" path="res://resources/Crafting/crafting_recipes/CraftingRecipe_spear.tres" id="1_784ly"]
+
+[resource]
+script = ExtResource("1_73pe4")
+DisplayName = "Spear"
+Description = "Allow you to fish or hunt animals, it's esentially a sharp stick."
+Recipe = ExtResource("1_784ly")
+metadata/_custom_type_script = "uid://cp74dd8j22inl"

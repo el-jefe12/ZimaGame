@@ -3,256 +3,298 @@ using Godot;
 [Tool]
 public partial class MainMenuButton : PanelContainer
 {
-    public enum MenuButtonState
-    {
-        Normal = 0,
-        Disabled = 1,
-        Hidden = 2
-    }
+	public enum MenuButtonState
+	{
+		Normal = 0,
+		Disabled = 1,
+		Hidden = 2
+	}
 
-    [ExportCategory("Button Setup")]
-    [Export]
-    public Resource? ActionResource
-    {
-        get => _actionResource;
-        set
-        {
-            _actionResource = value;
-            ApplyEditorUpdate();
-        }
-    }
+	[ExportCategory("Button Setup")]
+	[Export]
+	public Resource? ActionResource
+	{
+		get => _actionResource;
+		set
+		{
+			_actionResource = value;
+			ApplyEditorUpdate();
+		}
+	}
 
-    [Export]
-    public NodePath TextureButtonPath
-    {
-        get => _textureButtonPath;
-        set
-        {
-            _textureButtonPath = value;
-            ApplyEditorUpdate();
-        }
-    }
+	[Export]
+	public NodePath TextureButtonPath
+	{
+		get => _textureButtonPath;
+		set
+		{
+			_textureButtonPath = value;
+			ApplyEditorUpdate();
+		}
+	}
 
-    [Export]
-    public NodePath LabelPath
-    {
-        get => _labelPath;
-        set
-        {
-            _labelPath = value;
-            ApplyEditorUpdate();
-        }
-    }
+	[Export]
+	public NodePath LabelPath
+	{
+		get => _labelPath;
+		set
+		{
+			_labelPath = value;
+			ApplyEditorUpdate();
+		}
+	}
 
-    [ExportCategory("Text")]
-    [Export]
-    public string ButtonText
-    {
-        get => _buttonText;
-        set
-        {
-            _buttonText = value;
-            ApplyEditorUpdate();
-        }
-    }
+	[ExportCategory("Text")]
+	[Export]
+	public string ButtonText
+	{
+		get => _buttonText;
+		set
+		{
+			_buttonText = value;
+			ApplyEditorUpdate();
+		}
+	}
 
-    [ExportCategory("State")]
-    [Export]
-    public MenuButtonState State
-    {
-        get => _state;
-        set
-        {
-            _state = value;
-            ApplyEditorUpdate();
-        }
-    }
+	[ExportCategory("State")]
+	[Export]
+	public MenuButtonState State
+	{
+		get => _state;
+		set
+		{
+			_state = value;
+			ApplyEditorUpdate();
+		}
+	}
 
-    [Export]
-    public bool UseDisabledModulate
-    {
-        get => _useDisabledModulate;
-        set
-        {
-            _useDisabledModulate = value;
-            ApplyEditorUpdate();
-        }
-    }
+	[Export]
+	public bool UseDisabledModulate
+	{
+		get => _useDisabledModulate;
+		set
+		{
+			_useDisabledModulate = value;
+			ApplyEditorUpdate();
+		}
+	}
 
-    [Export]
-    public float DisabledAlpha
-    {
-        get => _disabledAlpha;
-        set
-        {
-            _disabledAlpha = Mathf.Clamp(value, 0.0f, 1.0f);
-            ApplyEditorUpdate();
-        }
-    }
+	[Export]
+	public float DisabledAlpha
+	{
+		get => _disabledAlpha;
+		set
+		{
+			_disabledAlpha = Mathf.Clamp(value, 0.0f, 1.0f);
+			ApplyEditorUpdate();
+		}
+	}
 
-    private Resource? _actionResource;
+	private Resource? _actionResource;
 
-    private NodePath _textureButtonPath = "StarVBoxContainer/StarButtonTexture";
-    private NodePath _labelPath = "StarVBoxContainer/StarLabel";
+	private NodePath _textureButtonPath = "StarVBoxContainer/StarButtonTexture";
+	private NodePath _labelPath = "StarVBoxContainer/StarLabel";
 
-    private string _buttonText = "Button";
-    private MenuButtonState _state = MenuButtonState.Normal;
+	private string _buttonText = "Button";
+	private MenuButtonState _state = MenuButtonState.Normal;
 
-    private bool _useDisabledModulate = true;
-    private float _disabledAlpha = 0.45f;
+	private bool _useDisabledModulate = true;
+	private float _disabledAlpha = 0.45f;
 
-    private TextureButton? _textureButton;
-    private RichTextLabel? _label;
-    private MainMenu? _mainMenu;
+	private TextureButton? _textureButton;
+	private RichTextLabel? _label;
+	private MainMenu? _mainMenu;
 
-    public override void _Ready()
-    {
-        CacheNodes();
-        ConnectButtonSignals();
-        ApplyEditorUpdate();
-    }
+	public override void _EnterTree()
+	{
+		// Needed so pause-menu buttons still work while GetTree().Paused is true.
+		ProcessMode = ProcessModeEnum.Always;
+	}
 
-    private void CacheNodes()
-    {
-        _textureButton = GetNodeOrNull<TextureButton>(_textureButtonPath);
-        _label = GetNodeOrNull<RichTextLabel>(_labelPath);
+	public override void _Ready()
+	{
+		ProcessMode = ProcessModeEnum.Always;
 
-        if (!Engine.IsEditorHint())
-        {
-            _mainMenu = GetTree().CurrentScene as MainMenu;
-        }
-    }
+		CacheNodes();
+		ConnectButtonSignals();
+		ApplyEditorUpdate();
+	}
 
-    private void ConnectButtonSignals()
-    {
-        if (_textureButton == null)
-        {
-            GD.PrintErr($"{Name}: TextureButton not found at path: {_textureButtonPath}");
-            return;
-        }
+	private void CacheNodes()
+	{
+		_textureButton = GetNodeOrNull<TextureButton>(_textureButtonPath);
+		_label = GetNodeOrNull<RichTextLabel>(_labelPath);
 
-        Callable pressedCallable = Callable.From(OnPressed);
-        Callable mouseEnteredCallable = Callable.From(OnMouseEntered);
-        Callable mouseExitedCallable = Callable.From(OnMouseExited);
+		if (!Engine.IsEditorHint())
+		{
+			_mainMenu = FindParentMainMenu();
 
-        if (!_textureButton.IsConnected(TextureButton.SignalName.Pressed, pressedCallable))
-        {
-            _textureButton.Pressed += OnPressed;
-        }
+			if (_mainMenu == null)
+			{
+				GD.PrintErr($"{Name}: MainMenu could not be found in parent chain.");
+			}
+		}
+	}
 
-        if (!_textureButton.IsConnected(Control.SignalName.MouseEntered, mouseEnteredCallable))
-        {
-            _textureButton.MouseEntered += OnMouseEntered;
-        }
+	private MainMenu? FindParentMainMenu()
+	{
+		Node? current = this;
 
-        if (!_textureButton.IsConnected(Control.SignalName.MouseExited, mouseExitedCallable))
-        {
-            _textureButton.MouseExited += OnMouseExited;
-        }
-    }
+		while (current != null)
+		{
+			if (current is MainMenu mainMenu)
+			{
+				return mainMenu;
+			}
 
-    private void ApplyEditorUpdate()
-    {
-        if (!IsInsideTree())
-        {
-            return;
-        }
+			current = current.GetParent();
+		}
 
-        CacheNodes();
-        ApplyText();
-        ApplyState();
-    }
+		return null;
+	}
 
-    private void ApplyText()
-    {
-        if (_label == null)
-        {
-            return;
-        }
+	private void ConnectButtonSignals()
+	{
+		if (_textureButton == null)
+		{
+			GD.PrintErr($"{Name}: TextureButton not found at path: {_textureButtonPath}");
+			return;
+		}
 
-        _label.Text = _buttonText;
-    }
+		Callable pressedCallable = Callable.From(OnPressed);
+		Callable mouseEnteredCallable = Callable.From(OnMouseEntered);
+		Callable mouseExitedCallable = Callable.From(OnMouseExited);
 
-    private void ApplyState()
-    {
-        bool isHidden = _state == MenuButtonState.Hidden;
-        bool isDisabled = _state == MenuButtonState.Disabled;
+		if (!_textureButton.IsConnected(TextureButton.SignalName.Pressed, pressedCallable))
+		{
+			_textureButton.Pressed += OnPressed;
+		}
 
-        Visible = !isHidden;
+		if (!_textureButton.IsConnected(Control.SignalName.MouseEntered, mouseEnteredCallable))
+		{
+			_textureButton.MouseEntered += OnMouseEntered;
+		}
 
-        if (_textureButton != null)
-        {
-            _textureButton.Disabled = isDisabled || isHidden;
-        }
+		if (!_textureButton.IsConnected(Control.SignalName.MouseExited, mouseExitedCallable))
+		{
+			_textureButton.MouseExited += OnMouseExited;
+		}
+	}
 
-        if (_useDisabledModulate && isDisabled)
-        {
-            Modulate = new Color(1.0f, 1.0f, 1.0f, _disabledAlpha);
-        }
-        else
-        {
-            Modulate = Colors.White;
-        }
+	private void ApplyEditorUpdate()
+	{
+		if (!IsInsideTree())
+		{
+			return;
+		}
 
-        Scale = Vector2.One;
-    }
+		CacheNodes();
+		ApplyText();
+		ApplyState();
+	}
 
-    private void OnPressed()
-    {
-        if (Engine.IsEditorHint())
-        {
-            return;
-        }
+	private void ApplyText()
+	{
+		if (_label == null)
+		{
+			return;
+		}
 
-        if (_state != MenuButtonState.Normal)
-        {
-            return;
-        }
+		_label.Text = _buttonText;
+	}
 
-        MenuButtonAction? action = ActionResource as MenuButtonAction;
+	private void ApplyState()
+	{
+		bool isHidden = _state == MenuButtonState.Hidden;
+		bool isDisabled = _state == MenuButtonState.Disabled;
 
-        if (action == null)
-        {
-            GD.PrintErr($"{Name}: ActionResource is not a valid MenuButtonAction.");
-            return;
-        }
+		Visible = !isHidden;
 
-        if (_mainMenu == null)
-        {
-            GD.PrintErr($"{Name}: MainMenu could not be found.");
-            return;
-        }
+		if (_textureButton != null)
+		{
+			_textureButton.Disabled = isDisabled || isHidden;
+			_textureButton.ProcessMode = ProcessModeEnum.Always;
+		}
 
-        action.Execute(this, _mainMenu);
-    }
+		if (_label != null)
+		{
+			_label.ProcessMode = ProcessModeEnum.Always;
+		}
 
-    private void OnMouseEntered()
-    {
-        if (_state != MenuButtonState.Normal)
-        {
-            return;
-        }
+		if (_useDisabledModulate && isDisabled)
+		{
+			Modulate = new Color(1.0f, 1.0f, 1.0f, _disabledAlpha);
+		}
+		else
+		{
+			Modulate = Colors.White;
+		}
 
-        Scale = new Vector2(1.05f, 1.05f);
-    }
+		Scale = Vector2.One;
+	}
 
-    private void OnMouseExited()
-    {
-        Scale = Vector2.One;
-    }
+	private void OnPressed()
+	{
+		if (Engine.IsEditorHint())
+		{
+			return;
+		}
 
-    public void SetNormal()
-    {
-        State = MenuButtonState.Normal;
-    }
+		if (_state != MenuButtonState.Normal)
+		{
+			return;
+		}
 
-    public void SetDisabled()
-    {
-        State = MenuButtonState.Disabled;
-    }
+		MenuButtonAction? action = ActionResource as MenuButtonAction;
 
-    public void SetHidden()
-    {
-        State = MenuButtonState.Hidden;
-    }
+		if (action == null)
+		{
+			GD.PrintErr($"{Name}: ActionResource is not a valid MenuButtonAction.");
+			return;
+		}
+
+		// Re-find it here too, because pause menu instances are created dynamically.
+		if (_mainMenu == null || !IsInstanceValid(_mainMenu))
+		{
+			_mainMenu = FindParentMainMenu();
+		}
+
+		if (_mainMenu == null)
+		{
+			GD.PrintErr($"{Name}: MainMenu could not be found.");
+			return;
+		}
+
+		action.Execute(this, _mainMenu);
+	}
+
+	private void OnMouseEntered()
+	{
+		if (_state != MenuButtonState.Normal)
+		{
+			return;
+		}
+
+		Scale = new Vector2(1.05f, 1.05f);
+	}
+
+	private void OnMouseExited()
+	{
+		Scale = Vector2.One;
+	}
+
+	public void SetNormal()
+	{
+		State = MenuButtonState.Normal;
+	}
+
+	public void SetDisabled()
+	{
+		State = MenuButtonState.Disabled;
+	}
+
+	public void SetHidden()
+	{
+		State = MenuButtonState.Hidden;
+	}
 }

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CraftingBookPageResource" load_steps=3 format=3 uid="uid://c2v0my362xl0u"]
+
+[ext_resource type="Resource" uid="uid://brwsmumeqs6jw" path="res://resources/Crafting/crafting_recipes/CraftingRecipe_fire.tres" id="1_v2nr1"]
+[ext_resource type="Script" uid="uid://cp74dd8j22inl" path="res://data/crafting/CraftingBookPageResource.cs" id="2_6sr8b"]
+
+[resource]
+script = ExtResource("2_6sr8b")
+DisplayName = "Fire"
+Description = "Greatest human invention. Warms your body"
+Recipe = ExtResource("1_v2nr1")
+metadata/_custom_type_script = "uid://cp74dd8j22inl"

@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="Item" load_steps=5 format=3 uid="uid://dtbc4fowv568k"]
+[gd_resource type="Resource" script_class="Item" load_steps=6 format=3 uid="uid://dtbc4fowv568k"]
 
 [ext_resource type="Script" uid="uid://2ofxdkbacdjx" path="res://data/ItemAction.cs" id="1_v4jn2"]
+[ext_resource type="Resource" uid="uid://8jtcx6qgco2g" path="res://resources/Items/ItemsActions/AttackActions/AttackAction_spear.tres" id="2_bo7i3"]
 [ext_resource type="Texture2D" uid="uid://br8o111hqqjp1" path="res://gfx/UI/gameUI/effects/effect_injured.png" id="2_eyk4g"]
 [ext_resource type="Script" uid="uid://m2f7h5b81nkv" path="res://data/Item.cs" id="2_u8g52"]
 [ext_resource type="PackedScene" uid="uid://dyxvmxlk5tbu" path="res://models/player/tools/spear/spear_test.tscn" id="3_bo7i3"]
@@ -15,4 +16,5 @@ ModelRotation = Vector3(8.9, 6.3, 71)
 Item_Type = 1
 Item_SubType = 4
 ItemWeight = 1.6
+Actions = Array[ExtResource("1_v4jn2")]([ExtResource("2_bo7i3")])
 metadata/_custom_type_script = "uid://m2f7h5b81nkv"

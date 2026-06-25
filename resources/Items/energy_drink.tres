@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="Item" load_steps=7 format=3 uid="uid://cmg5fy1vui747"]
+
+[ext_resource type="Script" uid="uid://2ofxdkbacdjx" path="res://data/ItemAction.cs" id="1_dookh"]
+[ext_resource type="Script" uid="uid://m2f7h5b81nkv" path="res://data/Item.cs" id="2_0pt8j"]
+[ext_resource type="Texture2D" uid="uid://cqevx01qw7ai3" path="res://gfx/UI/gameUI/effects/effect_tired_deadly.png" id="2_2ymx6"]
+[ext_resource type="Resource" uid="uid://bgt5fco7j5yxv" path="res://resources/Items/ItemValues/energy_drink_values.tres" id="2_7qsrc"]
+[ext_resource type="Resource" uid="uid://bcbxjhjvsbutc" path="res://resources/Items/ItemsActions/EatActions/EatAction_energy_drink.tres" id="2_ab8gh"]
+[ext_resource type="PackedScene" uid="uid://da3t4k26f0f71" path="res://models/player/items/energy_drink/energy_drink.tscn" id="3_7qsrc"]
+
+[resource]
+script = ExtResource("2_0pt8j")
+ItemName = "NRG Drink"
+WorldModel = ExtResource("3_7qsrc")
+Icon = ExtResource("2_2ymx6")
+ModelPosition = Vector3(0.047, 0.08, -0.001)
+ModelRotation = Vector3(5, -15, 0)
+ItemWeight = 0.1
+ConsumableData = ExtResource("2_7qsrc")
+Actions = Array[ExtResource("1_dookh")]([ExtResource("2_ab8gh")])
+metadata/_custom_type_script = "uid://m2f7h5b81nkv"

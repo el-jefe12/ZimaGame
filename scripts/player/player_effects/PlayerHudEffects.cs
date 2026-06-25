@@ -3,212 +3,389 @@ using Godot;
 
 public partial class PlayerHudEffects : Node
 {
-    private VBoxContainer _effectsList;
-    private HBoxContainer _effectsHBoxContainer;
+	private enum BadDirection
+	{
+		LowValueIsBad = 0,
+		HighValueIsBad = 1
+	}
 
-    private PanelContainer _dummyEffectSlot;
-    private Control _dummyEffectIcon;
+	private VBoxContainer _effectsList = null!;
+	private HBoxContainer _effectsHBoxContainer = null!;
 
-    private List<Effect> _effects = new();
+	private PanelContainer _dummyEffectSlot = null!;
+	private Control _dummyEffectIcon = null!;
 
-    private readonly List<Effect> _playerEffects = new();
+	private PlayerEffects? _playerEffectsSystem;
 
-    private readonly Dictionary<Effect.EType, int> _activeSeverityByType = new();
-    private readonly Dictionary<Effect.EType, Control> _activeIconsByType = new();
-    private readonly Dictionary<Effect.EType, Control> _activeSlotsByType = new();
+	private List<Effect> _allEffects = new();
 
-    private readonly Dictionary<Effect.EType, float[]> _thresholdsByType = new()
-    {
-        [Effect.EType.Hunger] = new[] { 75f, 50f, 25f, 0f },
-        [Effect.EType.Thirst] = new[] { 75f, 50f, 25f, 0f },
-        [Effect.EType.Tired]  = new[] { 75f, 50f, 25f, 0f },
-    };
+	private readonly List<Effect> _visibleEffects = new();
 
-    public IReadOnlyList<Effect> PlayerEffects => _playerEffects;
+	private readonly Dictionary<Effect.EType, int> _activeSeverityByType = new();
+	private readonly Dictionary<Effect.EType, Control> _activeIconsByType = new();
+	private readonly Dictionary<Effect.EType, Control> _activeSlotsByType = new();
+	private readonly Dictionary<Effect.EType, Effect> _activeEffectByType = new();
 
-    public void Setup(
-        VBoxContainer effectsList,
-        HBoxContainer effectsHBoxContainer,
-        PanelContainer dummyEffectSlot,
-        Control dummyEffectIcon
-    )
-    {
-        _effectsList = effectsList;
-        _effectsHBoxContainer = effectsHBoxContainer;
-        _dummyEffectSlot = dummyEffectSlot;
-        _dummyEffectIcon = dummyEffectIcon;
+	// Your PlayerNeedsSystem drains ALL THREE downward:
+	// 100 = good, 0 = bad.
+	private readonly Dictionary<Effect.EType, BadDirection> _badDirectionByType = new()
+	{
+		[Effect.EType.Hunger] = BadDirection.LowValueIsBad,
+		[Effect.EType.Thirst] = BadDirection.LowValueIsBad,
+		[Effect.EType.Tired] = BadDirection.LowValueIsBad,
+	};
 
-        if (EffectListScript.Instance == null)
-        {
-            GD.PushError("PlayerHudEffects: EffectListScript.Instance is NULL. Check your autoload setup.");
-            return;
-        }
+	// Badness thresholds:
+	// 0 = fine, 100 = terrible.
+	private const float LowBadness = 25.0f;
+	private const float MediumBadness = 50.0f;
+	private const float HighBadness = 75.0f;
+	private const float DeadlyBadness = 90.0f;
 
-        _effects = EffectListScript.Instance.EffectsList;
+	public IReadOnlyList<Effect> PlayerEffects => _visibleEffects;
 
-        GD.Print($"PlayerHudEffects: loaded effects count = {_effects.Count}");
-    }
+	public void Setup(
+		VBoxContainer effectsList,
+		HBoxContainer effectsHBoxContainer,
+		PanelContainer dummyEffectSlot,
+		Control dummyEffectIcon,
+		PlayerEffects? playerEffectsSystem
+	)
+	{
+		_effectsList = effectsList;
+		_effectsHBoxContainer = effectsHBoxContainer;
+		_dummyEffectSlot = dummyEffectSlot;
+		_dummyEffectIcon = dummyEffectIcon;
+		_playerEffectsSystem = playerEffectsSystem;
 
-    public void HandleStatEffect(Effect.EType type, float current, float max)
-    {
-        float pct = max <= 0f ? 100f : current / max * 100f;
-        int newSeverity = PercentToSeverity(type, pct);
+		if (EffectListScript.Instance == null)
+		{
+			GD.PushError("PlayerHudEffects: EffectListScript.Instance is NULL. Check your autoload setup.");
+			return;
+		}
 
-        int oldSeverity = -1;
+		_allEffects = EffectListScript.Instance.EffectsList;
 
-        if (_activeSeverityByType.TryGetValue(type, out int activeSeverity))
-            oldSeverity = activeSeverity;
+		EffectListScript.Instance.EnsureLoaded();
 
-        if (newSeverity == oldSeverity)
-            return;
+		_allEffects = EffectListScript.Instance.EffectsList;
 
-        if (oldSeverity != -1)
-            RemoveEffect(type);
+		GD.Print($"PlayerHudEffects: loaded effects count = {_allEffects.Count}");
+		PrintAllLoadedEffects();
 
-        if (newSeverity == -1)
-        {
-            _activeSeverityByType.Remove(type);
-            return;
-        }
+		if (_allEffects.Count == 0)
+		{
+			GD.PushError(
+				"PlayerHudEffects: Effect list is still empty after EnsureLoaded(). " +
+				"Fill EffectListScript.ExportEffects in the autoload inspector."
+			);
+		}
 
-        _activeSeverityByType[type] = newSeverity;
-        CreateEffect(type, newSeverity);
-    }
+		if (_playerEffectsSystem == null)
+		{
+			GD.PushWarning("PlayerHudEffects: PlayerEffects system is null. HUD effects will show, but gameplay modifiers will not run.");
+		}
+	}
 
-    public void ClearAllEffects()
-    {
-        foreach (Effect.EType type in new List<Effect.EType>(_activeSeverityByType.Keys))
-        {
-            RemoveEffect(type);
-        }
+	public void HandleStatEffect(Effect.EType type, float current, float max)
+	{
+		if (max <= 0.0f)
+		{
+			GD.PushWarning($"PlayerHudEffects: Invalid max value for {type}. Max={max}");
+			return;
+		}
 
-        _activeSeverityByType.Clear();
-        _playerEffects.Clear();
-    }
+		float safeCurrent = Mathf.Clamp(current, 0.0f, max);
+		float valuePercent = safeCurrent / max * 100.0f;
+		float badnessPercent = GetBadnessPercent(type, valuePercent);
 
-    private void CreateEffect(Effect.EType type, int severity)
-    {
-        GD.Print($"PlayerHudEffects: CreateEffect called. Type={type}, Severity={severity}");
+		int newSeverity = BadnessToSeverity(badnessPercent);
+		int oldSeverity = GetActiveSeverity(type);
 
-        Effect effect = FindEffect(type, severity);
+		GD.Print(
+			$"PlayerHudEffects: Type={type}, Current={current:F1}, Safe={safeCurrent:F1}, Max={max:F1}, " +
+			$"ValuePercent={valuePercent:F1}, Badness={badnessPercent:F1}, Old={oldSeverity}, New={newSeverity}"
+		);
 
-        if (effect == null)
-        {
-            GD.PushWarning($"PlayerHudEffects: No Effect resource found for type={type}, severity={severity}");
-            return;
-        }
+		if (newSeverity == oldSeverity)
+		{
+			return;
+		}
 
-        AddEffect(effect);
-    }
+		if (oldSeverity != -1)
+		{
+			RemoveEffect(type);
+			_activeSeverityByType.Remove(type);
+		}
 
-    private void AddEffect(Effect effect)
-    {
-        if (effect == null)
-        {
-            GD.PushWarning("PlayerHudEffects: AddEffect received null effect.");
-            return;
-        }
+		if (newSeverity == -1)
+		{
+			return;
+		}
 
-        Effect.EType key = effect.Type;
+		Effect? effect = FindEffect(type, newSeverity);
 
-        if (_effectsList == null)
-        {
-            GD.PushError("PlayerHudEffects: _effectsList is null. Did you call Setup()?");
-            return;
-        }
+		if (effect == null)
+		{
+			GD.PushWarning($"PlayerHudEffects: Could not find effect resource for Type={type}, Severity={newSeverity}.");
+			return;
+		}
 
-        if (_effectsHBoxContainer == null)
-        {
-            GD.PushError("PlayerHudEffects: _effectsHBoxContainer is null. Did you call Setup()?");
-            return;
-        }
+		bool added = AddEffect(effect);
 
-        if (_dummyEffectSlot == null)
-        {
-            GD.PushError("PlayerHudEffects: _dummyEffectSlot is null. Did you call Setup()?");
-            return;
-        }
+		if (added)
+		{
+			_activeSeverityByType[type] = newSeverity;
+		}
+	}
 
-        if (_dummyEffectIcon == null)
-        {
-            GD.PushError("PlayerHudEffects: _dummyEffectIcon is null. Did you call Setup()?");
-            return;
-        }
+	public void ClearAllEffects()
+	{
+		foreach (Effect.EType type in new List<Effect.EType>(_activeSeverityByType.Keys))
+		{
+			RemoveEffect(type);
+		}
 
-        RemoveEffect(key);
+		_activeSeverityByType.Clear();
+		_visibleEffects.Clear();
+		_activeEffectByType.Clear();
+	}
 
-        _playerEffects.RemoveAll(existingEffect =>
-            existingEffect != null && existingEffect.Type == key
-        );
+	private float GetBadnessPercent(Effect.EType type, float valuePercent)
+	{
+		BadDirection direction = BadDirection.LowValueIsBad;
 
-        EffectWindowLogic slot = (EffectWindowLogic)_dummyEffectSlot
-            .Duplicate((int)Node.DuplicateFlags.UseInstantiation);
+		if (_badDirectionByType.TryGetValue(type, out BadDirection foundDirection))
+		{
+			direction = foundDirection;
+		}
 
-        slot.Visible = true;
-        slot.EffectResourceRaw = effect;
-        _effectsList.AddChild(slot);
+		if (direction == BadDirection.LowValueIsBad)
+		{
+			return 100.0f - valuePercent;
+		}
 
-        EffectIconLogic iconRoot = (EffectIconLogic)_dummyEffectIcon
-            .Duplicate((int)Node.DuplicateFlags.UseInstantiation);
+		return valuePercent;
+	}
 
-        iconRoot.Visible = true;
-        iconRoot.EffectResourceRaw = effect;
-        _effectsHBoxContainer.AddChild(iconRoot);
+	private int BadnessToSeverity(float badnessPercent)
+	{
+		if (badnessPercent >= DeadlyBadness)
+		{
+			GD.Print("PlayerHudEffects: Severity = DEADLY");
+			return (int)Effect.Severity.Deadly;
+		}
 
-        _playerEffects.Add(effect);
+		if (badnessPercent >= HighBadness)
+		{
+			GD.Print("PlayerHudEffects: Severity = HIGH");
+			return (int)Effect.Severity.High;
+		}
 
-        _activeSlotsByType[key] = slot;
-        _activeIconsByType[key] = iconRoot;
-    }
+		if (badnessPercent >= MediumBadness)
+		{
+			GD.Print("PlayerHudEffects: Severity = MEDIUM");
+			return (int)Effect.Severity.Medium;
+		}
 
-    private void RemoveEffect(Effect.EType type)
-    {
-        if (_activeIconsByType.TryGetValue(type, out Control icon) && IsInstanceValid(icon))
-            icon.QueueFree();
+		if (badnessPercent >= LowBadness)
+		{
+			GD.Print("PlayerHudEffects: Severity = LOW");
+			return (int)Effect.Severity.Low;
+		}
 
-        if (_activeSlotsByType.TryGetValue(type, out Control slot) && IsInstanceValid(slot))
-            slot.QueueFree();
+		GD.Print("PlayerHudEffects: Severity = NONE");
+		return -1;
+	}
 
-        _activeIconsByType.Remove(type);
-        _activeSlotsByType.Remove(type);
+	private int GetActiveSeverity(Effect.EType type)
+	{
+		if (_activeSeverityByType.TryGetValue(type, out int severity))
+		{
+			return severity;
+		}
 
-        _playerEffects.RemoveAll(effect =>
-            effect != null && effect.Type == type
-        );
-    }
+		return -1;
+	}
 
-    private Effect FindEffect(Effect.EType type, int severity)
-    {
-        foreach (Effect effect in _effects)
-        {
-            if (effect == null)
-                continue;
+	private Effect? FindEffect(Effect.EType type, int severity)
+	{
+		foreach (Effect effect in _allEffects)
+		{
+			if (effect == null)
+			{
+				continue;
+			}
 
-            if (effect.Type == type && (int)effect.EffectSeverity == severity)
-                return effect;
-        }
+			if (effect.Type == type && (int)effect.EffectSeverity == severity)
+			{
+				string iconPath = effect.Icon == null ? "NULL" : effect.Icon.ResourcePath;
 
-        GD.PushWarning($"PlayerHudEffects: effect not found. Type='{type}', Severity={severity}, Effects loaded={_effects.Count}");
-        return null;
-    }
+				GD.Print(
+					$"PlayerHudEffects: Found effect '{effect.EffectName}' for Type={type}, " +
+					$"Severity={severity}, Icon='{iconPath}'"
+				);
 
-    private int PercentToSeverity(Effect.EType type, float pct)
-    {
-        if (!_thresholdsByType.TryGetValue(type, out float[] thresholds) || thresholds.Length < 4)
-            return -1;
+				return effect;
+			}
+		}
 
-        if (pct <= thresholds[3])
-            return 3;
+		GD.PushWarning($"PlayerHudEffects: effect not found. Type={type}, Severity={severity}, Effects loaded={_allEffects.Count}");
+		PrintAvailableEffectsForType(type);
+		return null;
+	}
 
-        if (pct <= thresholds[2])
-            return 2;
+	private void PrintAvailableEffectsForType(Effect.EType type)
+	{
+		GD.Print($"PlayerHudEffects: Available effects for Type={type}:");
 
-        if (pct <= thresholds[1])
-            return 1;
+		foreach (Effect effect in _allEffects)
+		{
+			if (effect == null)
+			{
+				continue;
+			}
 
-        if (pct <= thresholds[0])
-            return 0;
+			if (effect.Type != type)
+			{
+				continue;
+			}
 
-        return -1;
-    }
+			string iconPath = effect.Icon == null ? "NULL" : effect.Icon.ResourcePath;
+
+			GD.Print(
+				$" - Name='{effect.EffectName}', Severity={effect.EffectSeverity} ({(int)effect.EffectSeverity}), " +
+				$"Id='{effect.EffectId}', Icon='{iconPath}'"
+			);
+		}
+	}
+
+	private void PrintAllLoadedEffects()
+	{
+		GD.Print("========== PLAYER HUD EFFECTS LOADED ==========");
+
+		foreach (Effect effect in _allEffects)
+		{
+			if (effect == null)
+			{
+				GD.Print("Effect: NULL");
+				continue;
+			}
+
+			string iconPath = effect.Icon == null ? "NULL" : effect.Icon.ResourcePath;
+
+			int modifierCount = effect.Modifiers == null ? 0 : effect.Modifiers.Count;
+
+			GD.Print(
+				$"Effect: Name='{effect.EffectName}', Type={effect.Type}, " +
+				$"Severity={effect.EffectSeverity} ({(int)effect.EffectSeverity}), " +
+				$"Id='{effect.EffectId}', Modifiers={modifierCount}, Icon='{iconPath}'"
+			);
+		}
+
+		GD.Print("===============================================");
+	}
+
+	private bool AddEffect(Effect effect)
+	{
+		if (effect == null)
+		{
+			GD.PushWarning("PlayerHudEffects: AddEffect received null effect.");
+			return false;
+		}
+
+		if (_effectsList == null || _effectsHBoxContainer == null || _dummyEffectSlot == null || _dummyEffectIcon == null)
+		{
+			GD.PushError("PlayerHudEffects: Setup references are missing. Did you call Setup()?");
+			return false;
+		}
+
+		Effect.EType type = effect.Type;
+
+		string iconPath = effect.Icon == null ? "NULL" : effect.Icon.ResourcePath;
+
+		GD.Print(
+			$"PlayerHudEffects: AddEffect START. Name='{effect.EffectName}', " +
+			$"Type={effect.Type}, Severity={effect.EffectSeverity}, Icon='{iconPath}'"
+		);
+
+		EffectWindowLogic slot = (EffectWindowLogic)_dummyEffectSlot
+			.Duplicate((int)Node.DuplicateFlags.UseInstantiation);
+
+		slot.Visible = true;
+
+		// Add to tree first, then give it the resource.
+		_effectsList.AddChild(slot);
+		slot.EffectResourceRaw = effect;
+
+		EffectIconLogic iconRoot = (EffectIconLogic)_dummyEffectIcon
+			.Duplicate((int)Node.DuplicateFlags.UseInstantiation);
+
+		iconRoot.Visible = true;
+
+		// IMPORTANT:
+		// Add to tree first, then give it the resource.
+		// This lets EffectIconLogic find its child TextureRect properly.
+		_effectsHBoxContainer.AddChild(iconRoot);
+		iconRoot.EffectResourceRaw = effect;
+
+		// If your EffectIconLogic has Refresh(), call it after the node is inside the tree.
+		if (iconRoot.HasMethod("Refresh"))
+		{
+			iconRoot.CallDeferred("Refresh");
+		}
+
+		_visibleEffects.Add(effect);
+
+		_activeSlotsByType[type] = slot;
+		_activeIconsByType[type] = iconRoot;
+		_activeEffectByType[type] = effect;
+
+		if (_playerEffectsSystem != null)
+		{
+			GD.Print($"PlayerHudEffects: Applying gameplay effect '{effect.EffectName}', Type={effect.Type}, Severity={effect.EffectSeverity}, Id='{effect.EffectId}'");
+			_playerEffectsSystem.ApplyEffect(effect);
+		}
+
+		GD.Print($"PlayerHudEffects: AddEffect DONE. Name='{effect.EffectName}', Icon='{iconPath}'");
+
+		return true;
+	}
+
+	private void RemoveEffect(Effect.EType type)
+	{
+		if (_activeEffectByType.TryGetValue(type, out Effect effectToRemove))
+		{
+			if (_playerEffectsSystem != null)
+			{
+				if (!string.IsNullOrWhiteSpace(effectToRemove.EffectId))
+				{
+					GD.Print($"PlayerHudEffects: Removing gameplay effect '{effectToRemove.EffectName}', Id='{effectToRemove.EffectId}'");
+					_playerEffectsSystem.RemoveEffectById(effectToRemove.EffectId);
+				}
+				else
+				{
+					GD.PushWarning($"PlayerHudEffects: Cannot remove gameplay effect '{effectToRemove.EffectName}' because EffectId is empty.");
+				}
+			}
+		}
+
+		if (_activeIconsByType.TryGetValue(type, out Control icon) && IsInstanceValid(icon))
+		{
+			icon.QueueFree();
+		}
+
+		if (_activeSlotsByType.TryGetValue(type, out Control slot) && IsInstanceValid(slot))
+		{
+			slot.QueueFree();
+		}
+
+		_activeIconsByType.Remove(type);
+		_activeSlotsByType.Remove(type);
+		_activeEffectByType.Remove(type);
+
+		_visibleEffects.RemoveAll(effect =>
+			effect != null && effect.Type == type
+		);
+	}
 }

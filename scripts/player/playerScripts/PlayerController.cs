@@ -61,12 +61,19 @@ public partial class PlayerController : CharacterBody3D
 	{
 
 		if (robinsonGlobals.Instance != null)
+		{
 			robinsonGlobals.Instance.RegisterPlayer(this);
 
+			// New player scene means the player should be movable again.
+			robinsonGlobals.Instance.CanMove = true;
+			robinsonGlobals.Instance.OpenInventory = false;
+			robinsonGlobals.Instance.OpenItemUI = false;
+			robinsonGlobals.Instance.FreeMouseCursor = false;
+		}
 
 		_PlayerUI = GetNodeOrNull<CanvasLayer>("%PlayerUICanvasLayer");
 		_PlayerUI.Visible = true;
-
+	
 		_stats = GetNodeOrNull<PlayerStats>("%PlayerStats");
 
 		if (_stats == null)
@@ -136,16 +143,33 @@ public partial class PlayerController : CharacterBody3D
 
 	public override void _Input(InputEvent @event)
 	{
+		// Safety check. If the player is dead, do not allow pause menu,
+		// inventory, mouse look, or other gameplay input.
+		if (_health != null && _health.IsDead)
+		{
+			return;
+		}
+
 		if (@event.IsActionPressed("game_debug_ui_hide"))
 		{
-			_PlayerUI.Visible = !_PlayerUI.Visible;
+			if (_PlayerUI != null)
+			{
+				_PlayerUI.Visible = !_PlayerUI.Visible;
+			}
+
+			return;
 		}
 
 		if (@event.IsActionPressed("ui_cancel"))
-			Input.MouseMode = Input.MouseModeEnum.Visible;
+		{
+			if (PauseMenuManager.Instance != null)
+			{
+				PauseMenuManager.Instance.TogglePauseMenu();
+			}
 
-		if (_health.IsDead)
+			GetViewport().SetInputAsHandled();
 			return;
+		}
 
 		if (@event.IsActionPressed("game_open_inventory")
 			&& IsOnFloor()
@@ -153,10 +177,13 @@ public partial class PlayerController : CharacterBody3D
 			&& !robinsonGlobals.Instance.ConsoleActive)
 		{
 			InventoryManager.Instance.TogglePlayerInventory();
+			return;
 		}
 
 		if (Input.MouseMode != Input.MouseModeEnum.Captured)
+		{
 			return;
+		}
 
 		if (@event is InputEventMouseMotion motion)
 		{
@@ -170,7 +197,6 @@ public partial class PlayerController : CharacterBody3D
 		}
 	}
 
-
 	private void OnPlayerDied()
 	{
 		Velocity = Vector3.Zero;
@@ -178,11 +204,15 @@ public partial class PlayerController : CharacterBody3D
 		Input.MouseMode = Input.MouseModeEnum.Visible;
 
 		if (robinsonGlobals.Instance != null)
+		{
 			robinsonGlobals.Instance.CanMove = false;
+			robinsonGlobals.Instance.ShowDeathScreen();
+		}
 
-
-		_PlayerUI.Visible = false;
-		robinsonGlobals.Instance.ShowDeathScreen();
+		if (_PlayerUI != null)
+		{
+			_PlayerUI.Visible = false;
+		}
 	}
 
 

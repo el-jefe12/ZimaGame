@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="CraftingBookResource" load_steps=6 format=3 uid="uid://dowtc75p7qpoi"]
+
+[ext_resource type="Script" uid="uid://cp74dd8j22inl" path="res://data/crafting/CraftingBookPageResource.cs" id="1_63ymk"]
+[ext_resource type="Resource" uid="uid://b1g2y2qlskll8" path="res://resources/Crafting/crafting_pages/CraftingBookPage_spear.tres" id="2_1a1bi"]
+[ext_resource type="Script" uid="uid://dbxilcac3i7j8" path="res://data/crafting/CraftingBookResource.cs" id="2_1151r"]
+[ext_resource type="Resource" uid="uid://c2v0my362xl0u" path="res://resources/Crafting/crafting_pages/CraftingBookPage_fire.tres" id="3_ifeir"]
+[ext_resource type="Resource" uid="uid://bd6048ur5epnk" path="res://resources/Crafting/crafting_pages/CraftingBookPage_shelter.tres" id="4_fc68s"]
+
+[resource]
+script = ExtResource("2_1151r")
+Pages = Array[ExtResource("1_63ymk")]([ExtResource("2_1a1bi"), ExtResource("3_ifeir"), ExtResource("4_fc68s")])
+metadata/_custom_type_script = "uid://dbxilcac3i7j8"

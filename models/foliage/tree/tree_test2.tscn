@@ -1,10 +1,11 @@
-[gd_scene load_steps=10 format=3 uid="uid://cp78k6pteugx6"]
+[gd_scene load_steps=11 format=3 uid="uid://cp78k6pteugx6"]
 
 [ext_resource type="ArrayMesh" uid="uid://d3xedsilrbfla" path="res://models/foliage/tree/tree_test_body.res" id="1_ok5m6"]
 [ext_resource type="Script" uid="uid://bgqoglei7mu26" path="res://scripts/game/tree/DamageableTree.cs" id="1_vxfbs"]
-[ext_resource type="Resource" uid="uid://yt6ax8ipa05j" path="res://resources/Items/rock_material.tres" id="2_ptcv5"]
 [ext_resource type="ArrayMesh" uid="uid://ccqmb3u8061ki" path="res://models/foliage/tree/tree_test_stump.res" id="2_vxfbs"]
 [ext_resource type="ArrayMesh" uid="uid://dknekiq8s4tin" path="res://models/foliage/tree/tree_test_tree_branch.res" id="3_ok5m6"]
+[ext_resource type="PackedScene" uid="uid://b3sfdarrqhye" path="res://scenes/items/Item.tscn" id="4_g2733"]
+[ext_resource type="Resource" uid="uid://b0slfu10mk406" path="res://resources/Items/branch.tres" id="5_g2733"]
 [ext_resource type="Script" uid="uid://bhwlg0gy07twj" path="res://scripts/game/objects/Damageable.cs" id="5_x80en"]
 [ext_resource type="Script" uid="uid://ymdtytcsekcn" path="res://scripts/game/objects/WorldItemDropper.cs" id="6_g2733"]
 
@@ -26,7 +27,8 @@ script = ExtResource("5_x80en")
 
 [node name="ItemDropper" type="Node3D" parent="."]
 script = ExtResource("6_g2733")
-DropItemDefinitionRaw = ExtResource("2_ptcv5")
+WorldItemScene = ExtResource("4_g2733")
+DropItemDefinitionRaw = ExtResource("5_g2733")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="."]
 

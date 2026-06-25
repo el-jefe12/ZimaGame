@@ -1,13 +1,16 @@
-[gd_resource type="Resource" script_class="Effect" load_steps=4 format=3 uid="uid://bka246k3pe1yg"]
+[gd_resource type="Resource" script_class="Effect" load_steps=5 format=3 uid="uid://bka246k3pe1yg"]
 
 [ext_resource type="Script" uid="uid://bgqt0kdjsgsb2" path="res://data/effect/Effect.cs" id="1_dq3ij"]
 [ext_resource type="Texture2D" uid="uid://be8ouufpbemkl" path="res://gfx/UI/gameUI/effects/effect_hunger_deadly.png" id="1_xbusa"]
 [ext_resource type="Script" uid="uid://bve4fsoq0q8pi" path="res://data/effect/EffectModifier.cs" id="2_15u25"]
+[ext_resource type="Resource" uid="uid://djowdvqbxp34y" path="res://resources/Effects/EffectModifiers/EffectModifier_deadly_hunger.tres" id="3_yfhuv"]
 
 [resource]
 script = ExtResource("1_dq3ij")
-EffectSeverity = 3
 EffectName = "Starving"
 Icon = ExtResource("1_xbusa")
 EffectDescription = "I feel so weak. Please... something... to eat..."
+EffectSeverity = 3
+DurationSeconds = 100.0
+Modifiers = Array[ExtResource("2_15u25")]([ExtResource("3_yfhuv")])
 metadata/_custom_type_script = "uid://bgqt0kdjsgsb2"

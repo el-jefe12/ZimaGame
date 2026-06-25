@@ -7,28 +7,6 @@ public partial class WorldItem : RigidBody3D, IInteractable
     [Export] public float KillY = -50f;
     [Export] public float RecoverHeight = 0.5f;
 
-    private float _checkTimer = 0f;
-    private Vector3 _spawnPosition;
-
-    private ItemInstance _itemInstance;
-
-    private Node3D _modelRoot;
-    private Node3D _modelInstance;
-
-    private Vector3 _lastSafePosition;
-    private bool _hasSafePosition = false;
-
-    private Resource _itemDefinitionRaw;
-
-    private MeshInstance3D _dummyEditorMesh;
-
-    private bool _buildQueued = false;
-
-    private readonly List<CollisionShape3D> _spawnedCollisionShapes = new();
-
-    // 🔥 NEW: editor change tracking
-    private Resource _lastRaw;
-
     [Export(PropertyHint.ResourceType, "Item")]
     public Resource ItemDefinitionRaw
     {
@@ -36,15 +14,40 @@ public partial class WorldItem : RigidBody3D, IInteractable
         set
         {
             _itemDefinitionRaw = value;
+
+            // In editor/manual placement, changing the raw item creates a fresh instance.
             SyncItemInstanceFromRaw();
 
-            // Runtime only
             if (!Engine.IsEditorHint() && IsInsideTree())
-            {
                 QueueBuildModel();
-            }
         }
     }
+
+    [Export] public Area3D ItemDetectArea3D;
+
+    private float _checkTimer = 0f;
+    private Vector3 _spawnPosition;
+
+    private ItemInstance _itemInstance;
+    private Resource _itemDefinitionRaw;
+    private Resource _lastRaw;
+
+    private Node3D _modelRoot;
+    private Node3D _modelInstance;
+    private MeshInstance3D _dummyEditorMesh;
+
+    private Vector3 _lastSafePosition;
+    private bool _hasSafePosition = false;
+
+    private bool _buildQueued = false;
+
+    private readonly List<CollisionShape3D> _spawnedCollisionShapes = new List<CollisionShape3D>();
+
+    private bool _hasPendingPhysics = false;
+    private Vector3 _pendingLinearVelocity = Vector3.Zero;
+    private Vector3 _pendingAngularVelocity = Vector3.Zero;
+
+    private bool _playerInRange = false;
 
     public Item ItemDefinition => _itemDefinitionRaw as Item;
 
@@ -55,18 +58,25 @@ public partial class WorldItem : RigidBody3D, IInteractable
         {
             _itemInstance = value;
             _itemDefinitionRaw = value?.Definition;
-            QueueBuildModel();
+
+            if (IsInsideTree())
+                QueueBuildModel();
         }
     }
 
     public Item ItemData => _itemInstance?.Definition;
 
-    [Export] public Area3D ItemDetectArea3D;
-
-    private bool playerInRange = false;
-
     public override void _Ready()
     {
+        // Prevent physics from running before the model/collision is ready.
+        if (!Engine.IsEditorHint())
+        {
+            Freeze = true;
+            Sleeping = true;
+            LinearVelocity = Vector3.Zero;
+            AngularVelocity = Vector3.Zero;
+        }
+
         ContactMonitor = true;
         MaxContactsReported = 4;
 
@@ -91,9 +101,12 @@ public partial class WorldItem : RigidBody3D, IInteractable
             ItemDetectArea3D.BodyExited += OnBodyExited;
         }
 
-        SyncItemInstanceFromRaw();
+        // Only create a new ItemInstance for manually placed world items.
+        // Dropped items already receive their existing ItemInstance before/after entering the scene.
+        if (_itemInstance == null)
+            SyncItemInstanceFromRaw();
 
-        CallDeferred(nameof(BuildModel));
+        QueueBuildModel();
     }
 
     public override void _Process(double delta)
@@ -101,11 +114,10 @@ public partial class WorldItem : RigidBody3D, IInteractable
         if (!Engine.IsEditorHint())
             return;
 
-        // 🔥 Detect inspector changes reliably
+        // Detect inspector item-resource changes in editor.
         if (_itemDefinitionRaw != _lastRaw)
         {
             _lastRaw = _itemDefinitionRaw;
-
             SyncItemInstanceFromRaw();
             BuildModel();
         }
@@ -138,8 +150,56 @@ public partial class WorldItem : RigidBody3D, IInteractable
         _checkTimer = 0f;
 
         if (GlobalPosition.Y < KillY)
-        {
             RecoverToGround();
+    }
+
+    public void PrepareDroppedItem(
+        ItemInstance itemInstance,
+        Vector3 worldPosition,
+        Vector3 linearVelocity,
+        Vector3 angularVelocity
+    )
+    {
+        if (itemInstance == null || itemInstance.Definition == null)
+        {
+            GD.PushError("WorldItem: PrepareDroppedItem received null item.");
+            return;
+        }
+
+        // Freeze while the item is being initialized/rebuilt.
+        Freeze = true;
+        Sleeping = true;
+        LinearVelocity = Vector3.Zero;
+        AngularVelocity = Vector3.Zero;
+
+        ItemInstance = itemInstance;
+
+        GlobalPosition = worldPosition;
+        _spawnPosition = worldPosition;
+
+        _pendingLinearVelocity = linearVelocity;
+        _pendingAngularVelocity = angularVelocity;
+        _hasPendingPhysics = true;
+
+        QueueBuildModel();
+    }
+
+    private void ActivateDroppedItemPhysics()
+    {
+        if (Engine.IsEditorHint())
+            return;
+
+        Freeze = false;
+        Sleeping = false;
+
+        if (_hasPendingPhysics)
+        {
+            LinearVelocity = _pendingLinearVelocity;
+            AngularVelocity = _pendingAngularVelocity;
+
+            _pendingLinearVelocity = Vector3.Zero;
+            _pendingAngularVelocity = Vector3.Zero;
+            _hasPendingPhysics = false;
         }
     }
 
@@ -200,10 +260,19 @@ public partial class WorldItem : RigidBody3D, IInteractable
         if (!IsInsideTree() || _modelRoot == null)
             return;
 
-        foreach (Node child in _modelRoot.GetChildren())
+        // Remove collision shapes moved from older generated models.
+        for (int i = 0; i < _spawnedCollisionShapes.Count; i++)
         {
-            child.QueueFree();
+            CollisionShape3D shape = _spawnedCollisionShapes[i];
+
+            if (GodotObject.IsInstanceValid(shape))
+                shape.QueueFree();
         }
+
+        _spawnedCollisionShapes.Clear();
+
+        foreach (Node child in _modelRoot.GetChildren())
+            child.QueueFree();
 
         _modelInstance = null;
 
@@ -211,32 +280,46 @@ public partial class WorldItem : RigidBody3D, IInteractable
             _dummyEditorMesh.Visible = true;
 
         if (ItemData == null || ItemData.WorldModel == null)
+        {
+            if (!Engine.IsEditorHint())
+                CallDeferred(nameof(ActivateDroppedItemPhysics));
+
             return;
+        }
 
         Node3D modelScene = ItemData.WorldModel.Instantiate<Node3D>();
 
         if (modelScene == null)
         {
             GD.PushError("WorldItem: Failed to instantiate WorldModel.");
+
+            if (!Engine.IsEditorHint())
+                CallDeferred(nameof(ActivateDroppedItemPhysics));
+
             return;
         }
 
-        modelScene.Position = Vector3.Zero;
-        modelScene.Rotation = Vector3.Zero;
-        modelScene.Scale = Vector3.One;
+        // Apply the item-specific world pickup transform.
+        // This affects how the item appears when dropped or placed in the world.
+        modelScene.Position = ItemData.WorldModelPosition;
+        modelScene.RotationDegrees = ItemData.WorldModelRotation;
+        modelScene.Scale = ItemData.WorldModelScale;
 
         _modelRoot.AddChild(modelScene);
         _modelInstance = modelScene;
-
+        
         if (Engine.IsEditorHint())
         {
             if (_dummyEditorMesh != null)
                 _dummyEditorMesh.Visible = false;
+
+            return;
         }
-        else
-        {
-            MoveCollisionShapes(modelScene);
-        }
+
+        MoveCollisionShapes(modelScene);
+
+        // Wait one frame so moved collision shapes are properly registered.
+        CallDeferred(nameof(ActivateDroppedItemPhysics));
     }
 
     private void MoveCollisionShapes(Node node)
@@ -260,18 +343,18 @@ public partial class WorldItem : RigidBody3D, IInteractable
     private void OnBodyEntered(Node body)
     {
         if (body.IsInGroup("player"))
-            playerInRange = true;
+            _playerInRange = true;
     }
 
     private void OnBodyExited(Node body)
     {
         if (body.IsInGroup("player"))
-            playerInRange = false;
+            _playerInRange = false;
     }
 
     public void Interact(Node player)
     {
-        if (!playerInRange)
+        if (!_playerInRange)
             return;
 
         Pickup(player);
@@ -279,10 +362,13 @@ public partial class WorldItem : RigidBody3D, IInteractable
 
     private void Pickup(Node player)
     {
-        if (_itemInstance == null)
+        if (_itemInstance == null || _itemInstance.Definition == null)
             return;
 
         PlayerInventory inventory = player.GetNodeOrNull<PlayerInventory>("Inventory");
+
+        if (inventory == null)
+            inventory = player.GetNodeOrNull<PlayerInventory>("%Inventory");
 
         if (inventory == null)
         {
@@ -290,8 +376,15 @@ public partial class WorldItem : RigidBody3D, IInteractable
             return;
         }
 
-        if (!inventory.AddItemToHotbar(_itemInstance))
+        // Try hotbar first.
+        if (inventory.AddItemToHotbar(_itemInstance))
+        {
+            QueueFree();
             return;
+        }
+
+        // Fallback to normal inventory.
+        inventory.AddItemInstance(_itemInstance);
 
         QueueFree();
     }
@@ -306,7 +399,7 @@ public partial class WorldItem : RigidBody3D, IInteractable
 
     public bool CanInteract(Node player)
     {
-        return playerInRange;
+        return _playerInRange;
     }
 
     private bool TryGetGroundPosition(Vector3 origin, out Vector3 groundPosition)
@@ -323,7 +416,7 @@ public partial class WorldItem : RigidBody3D, IInteractable
         query.CollideWithAreas = false;
         query.Exclude = new Godot.Collections.Array<Rid> { GetRid() };
 
-        var result = spaceState.IntersectRay(query);
+        Godot.Collections.Dictionary result = spaceState.IntersectRay(query);
 
         if (result.Count == 0)
             return false;

@@ -1,89 +1,63 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public partial class HotBarScript : PanelContainer
 {
-    // Handles the visible 3D model of the currently selected hotbar item.
-    private WeaponHolder _weaponHolder;
+    public event Action<ItemInstance> SelectedItemChanged;
 
-    // Gives this script access to HUD prompts.
+    private WeaponHolder _weaponHolder;
     private playerHUD _playerHUD;
 
-    // Visual frame/marker that sits on top of the selected hotbar slot.
     private TextureRect _selectedItemSlot;
-
-    // All five hotbar slot UI nodes.
     private TextureRect[] _itemSlotArray;
 
-    // Remembers which item is currently equipped so we do not re-equip it every frame.
     private ItemInstance _lastEquippedItem;
-
-    // RichTextLabel that shows the name of the selected hotbar item.
     private RichTextLabel _CurrentItemNameRichTextLabel;
 
-    // Scene used when throwing/dropping an item into the world.
-    [Export]
-    public PackedScene ItemScene;
+    [ExportCategory("Groups")]
+    [Export] public string InventoryContainerGroupName = "inventory_container";
+    [Export] public string ContainerPanelGroupName = "container_inventory_panel";
+    [Export] public string HotbarGroupName = "hotbar";
 
-    // Group name used to find the inventory UI container.
-    [Export]
-    public string InventoryContainerGroupName = "inventory_container";
+    private readonly ItemInstance[] _hotbarItems = new ItemInstance[5];
 
-    // Group name assigned to this hotbar.
-    [Export]
-    public string HotbarGroupName = "hotbar";
-
-    // Actual item data stored in the hotbar slots.
-    private ItemInstance[] _hotbarItems = new ItemInstance[5];
-
-    // Index of the currently selected hotbar slot.
     private int _selectedIndex = 0;
 
-    // Player inventory that owns/syncs the hotbar data.
     private PlayerInventory _inventory;
+    private HotbarStorageAdapter _hotbarStorage;
 
-    // Manual drag state for moving hotbar items while inventory is open.
     private bool _manualDragActive = false;
     private int _manualDragSourceSlot = -1;
     private ItemInstance _manualDragItem = null;
     private CanvasLayer _manualDragLayer = null;
     private TextureRect _manualDragPreview = null;
 
-    // Hold-use state for actions that require holding a button.
     private bool _holdUseActive = false;
     private bool _holdUseCompleted = false;
     private float _holdUseTimer = 0.0f;
     private ItemInstance _holdUseItem = null;
     private ItemAction _holdUseAction = null;
 
-    // Sets up node references, connects inventory events, and draws the starting hotbar.
     public override void _Ready()
     {
         GD.Print("HotBar: Ready");
 
-        Node player = GetTree().GetFirstNodeInGroup("player");
-
-        if (player != null)
-        {
-            _weaponHolder = GetTree().GetFirstNodeInGroup("weapon_holder") as WeaponHolder;
-
-            if (_weaponHolder == null)
-                GD.PushError("HotBar: WeaponHolder not found under player");
-        }
-
         AddToGroup(HotbarGroupName);
 
-        _selectedItemSlot = GetNode<TextureRect>("%SelectedItemSlot");
+        _hotbarStorage = new HotbarStorageAdapter(this);
 
-        _CurrentItemNameRichTextLabel = GetNode<RichTextLabel>("%CurrentItemNameRichTextLabel");
+        // Cache UI nodes first, before any slot visual updates.
+        _selectedItemSlot = GetNodeOrNull<TextureRect>("%SelectedItemSlot");
+        _CurrentItemNameRichTextLabel = GetNodeOrNull<RichTextLabel>("%CurrentItemNameRichTextLabel");
 
         _itemSlotArray = new TextureRect[]
         {
-            GetNode<TextureRect>("%ItemSlot0"),
-            GetNode<TextureRect>("%ItemSlot1"),
-            GetNode<TextureRect>("%ItemSlot2"),
-            GetNode<TextureRect>("%ItemSlot3"),
-            GetNode<TextureRect>("%ItemSlot4"),
+            GetNodeOrNull<TextureRect>("%ItemSlot0"),
+            GetNodeOrNull<TextureRect>("%ItemSlot1"),
+            GetNodeOrNull<TextureRect>("%ItemSlot2"),
+            GetNodeOrNull<TextureRect>("%ItemSlot3"),
+            GetNodeOrNull<TextureRect>("%ItemSlot4"),
         };
 
         MouseFilter = MouseFilterEnum.Ignore;
@@ -95,16 +69,23 @@ public partial class HotBarScript : PanelContainer
         {
             if (_itemSlotArray[i] != null)
                 _itemSlotArray[i].MouseFilter = MouseFilterEnum.Ignore;
+            else
+                GD.PushError($"HotBar: ItemSlot{i} was not found. Check the node unique name.");
         }
 
-        _playerHUD = GetTree().GetFirstNodeInGroup("hud") as playerHUD;
-
-        if (_playerHUD == null)
-            GD.PushError("HotBar: PlayerHUD not found");
+        Node player = GetTree().GetFirstNodeInGroup("player");
 
         if (player != null)
         {
+            _weaponHolder = GetTree().GetFirstNodeInGroup("weapon_holder") as WeaponHolder;
+
+            if (_weaponHolder == null)
+                GD.PushError("HotBar: WeaponHolder not found under player.");
+
             _inventory = player.GetNodeOrNull<PlayerInventory>("%Inventory");
+
+            if (_inventory == null)
+                _inventory = player.GetNodeOrNull<PlayerInventory>("Inventory");
 
             if (_inventory != null)
             {
@@ -120,13 +101,18 @@ public partial class HotBarScript : PanelContainer
             }
             else
             {
-                GD.PushError("HotBar: PlayerInventory not found");
+                GD.PushError("HotBar: PlayerInventory not found.");
             }
         }
         else
         {
-            GD.PushError("HotBar: Player not found");
+            GD.PushError("HotBar: Player not found.");
         }
+
+        _playerHUD = GetTree().GetFirstNodeInGroup("hud") as playerHUD;
+
+        if (_playerHUD == null)
+            GD.PushError("HotBar: PlayerHUD not found.");
 
         UpdateSelectionVisual();
         UpdateSelectedItemNameText();
@@ -134,18 +120,18 @@ public partial class HotBarScript : PanelContainer
 
         CallDeferred(nameof(UpdateHeldItem));
         CallDeferred(nameof(UpdateHotbarActionPrompt));
+        CallDeferred(nameof(EmitSelectedItemChanged));
     }
 
-    // Disconnects events and clears HUD prompts when this node is removed.
     public override void _ExitTree()
     {
         if (_inventory != null)
             _inventory.HotbarItemAdded -= OnHotbarItemAdded;
 
         HideHotbarActionPrompts();
+        CleanupManualHotbarDrag();
     }
 
-    // Updates drag preview and hold-use timing every frame.
     public override void _Process(double delta)
     {
         if (_manualDragActive)
@@ -160,12 +146,11 @@ public partial class HotBarScript : PanelContainer
         UpdateHoldUse((float)delta);
     }
 
-    // Handles hotbar input: inventory dragging, item actions, scrolling, and discarding.
-    public override void _Input(InputEvent @event)
+    public override void _Input(InputEvent inputEvent)
     {
         if (robinsonGlobals.Instance != null && robinsonGlobals.Instance.OpenInventory)
         {
-            HandleInventoryOpenMouseInput(@event);
+            HandleInventoryOpenMouseInput(inputEvent);
             return;
         }
 
@@ -178,209 +163,27 @@ public partial class HotBarScript : PanelContainer
         if (!IsVisibleInTree())
             return;
 
-        HandleActionInput(@event);
+        HandleActionInput(inputEvent);
 
-        if (@event.IsActionPressed("game_scroll_up"))
+        if (inputEvent.IsActionPressed("game_scroll_up"))
         {
             GD.Print("HotBar: Scroll Up");
             ChangeSelection(-1);
         }
 
-        if (@event.IsActionPressed("game_scroll_down"))
+        if (inputEvent.IsActionPressed("game_scroll_down"))
         {
             GD.Print("HotBar: Scroll Down");
             ChangeSelection(1);
         }
 
-        if (@event.IsActionPressed("game_item_discard"))
+        if (inputEvent.IsActionPressed("game_item_discard"))
         {
-            GD.Print("HotBar: Discard key pressed");
-            DiscardSelectedItem();
+            GD.Print("HotBar: Drop key pressed");
+            DropSelectedItem();
         }
     }
 
-    // Checks whether the selected item's actions were triggered by input.
-    private void HandleActionInput(InputEvent inputEvent)
-    {
-        if (IsInventoryMode() || IsItemUIMode())
-            return;
-
-        ItemInstance item = GetSelectedItem();
-
-        if (item == null || item.Definition == null)
-            return;
-
-        if (item.Definition.Actions == null || item.Definition.Actions.Count == 0)
-            return;
-
-        Node player = GetTree().GetFirstNodeInGroup("player");
-
-        if (player == null)
-            return;
-
-        for (int i = 0; i < item.Definition.Actions.Count; i++)
-        {
-            ItemAction action = item.Definition.Actions[i];
-
-            if (action == null)
-                continue;
-
-            if (string.IsNullOrWhiteSpace(action.InputActionName))
-                continue;
-
-            if (inputEvent.IsActionPressed(action.InputActionName))
-            {
-                if (!action.CanExecute(player, item))
-                    continue;
-
-                GD.Print($"HotBar: Input triggered action {i}: {action.GetType().Name}");
-
-                if (action.HoldRequired)
-                {
-                    StartHoldUse(item, action);
-                    return;
-                }
-
-                ExecuteAction(item, action);
-                return;
-            }
-
-            if (inputEvent.IsActionReleased(action.InputActionName))
-            {
-                if (_holdUseActive && _holdUseAction == action)
-                {
-                    if (!_holdUseCompleted)
-                        GD.Print("HotBar: Hold use cancelled.");
-
-                    ClearHoldUse();
-                    return;
-                }
-            }
-        }
-    }
-
-    // Starts tracking a hold-required item action.
-    private void StartHoldUse(ItemInstance item, ItemAction action)
-    {
-        if (item == null || item.Definition == null || action == null)
-            return;
-
-        _holdUseActive = true;
-        _holdUseCompleted = false;
-        _holdUseTimer = 0.0f;
-        _holdUseItem = item;
-        _holdUseAction = action;
-
-        GD.Print(
-            $"HotBar: Started hold action {action.GetType().Name} for {item.Definition.ItemName}. " +
-            $"Required duration: {action.HoldDuration}"
-        );
-    }
-
-    // Finishes or cancels a hold-required action.
-    private void UpdateHoldUse(float delta)
-    {
-        if (!_holdUseActive)
-            return;
-
-        if (_holdUseCompleted)
-            return;
-
-        if (_holdUseAction == null || string.IsNullOrWhiteSpace(_holdUseAction.InputActionName))
-        {
-            ClearHoldUse();
-            return;
-        }
-
-        if (!Input.IsActionPressed(_holdUseAction.InputActionName))
-        {
-            ClearHoldUse();
-            return;
-        }
-
-        if (_holdUseItem == null || _holdUseItem.Definition == null)
-        {
-            ClearHoldUse();
-            return;
-        }
-
-        ItemInstance selectedItem = GetSelectedItem();
-
-        if (selectedItem != _holdUseItem)
-        {
-            GD.Print("HotBar: Hold use cancelled because selected item changed.");
-            ClearHoldUse();
-            return;
-        }
-
-        _holdUseTimer += delta;
-
-        if (_holdUseTimer < _holdUseAction.HoldDuration)
-            return;
-
-        _holdUseCompleted = true;
-
-        GD.Print($"HotBar: Hold action completed for {_holdUseItem.Definition.ItemName}.");
-
-        ExecuteAction(_holdUseItem, _holdUseAction);
-
-        ClearHoldUse();
-    }
-
-    // Resets all hold-use state.
-    private void ClearHoldUse()
-    {
-        _holdUseActive = false;
-        _holdUseCompleted = false;
-        _holdUseTimer = 0.0f;
-        _holdUseItem = null;
-        _holdUseAction = null;
-    }
-
-    // Runs an item action and applies its result.
-    private void ExecuteAction(ItemInstance item, ItemAction action)
-    {
-        if (item == null || item.Definition == null || action == null)
-            return;
-
-        Node player = GetTree().GetFirstNodeInGroup("player");
-
-        if (player == null)
-        {
-            GD.PrintErr("HotBar: ExecuteAction failed. Player not found.");
-            return;
-        }
-
-        GD.Print($"HotBar: Executing action {action.GetType().Name} for {item.Definition.ItemName}.");
-
-        ItemActionResult result = action.Execute(player, item);
-
-        GD.Print($"HotBar: Action result: {result}");
-
-        ApplyActionResult(item, result);
-    }
-
-    // Applies action result flags such as removing the item or refreshing the HUD.
-    private void ApplyActionResult(ItemInstance item, ItemActionResult result)
-    {
-        if ((result & ItemActionResult.RemoveItem) != 0)
-        {
-            string itemName = item?.Definition?.ItemName ?? "unknown item";
-
-            GD.Print($"HotBar: Action removed item {itemName}");
-
-            RemoveItem(_selectedIndex);
-            return;
-        }
-
-        if ((result & ItemActionResult.RefreshHeldItem) != 0)
-            UpdateHeldItem();
-
-        if ((result & ItemActionResult.RefreshPrompt) != 0)
-            UpdateHotbarActionPrompt();
-    }
-
-    // Handles clicking and dragging hotbar items while the inventory is open.
     private void HandleInventoryOpenMouseInput(InputEvent inputEvent)
     {
         if (!IsVisibleInTree())
@@ -427,10 +230,12 @@ public partial class HotBarScript : PanelContainer
         }
     }
 
-    // Creates the floating icon preview when dragging a hotbar item.
     private void StartManualHotbarDrag(int sourceSlot, ItemInstance item)
     {
         ClearHoldUse();
+
+        if (item == null || item.Definition == null)
+            return;
 
         GD.Print($"HotBar: Manual drag started from slot {sourceSlot} item {item.Definition.ItemName}");
 
@@ -459,7 +264,6 @@ public partial class HotBarScript : PanelContainer
         UpdateManualDragPreviewPosition();
     }
 
-    // Drops the dragged item into another hotbar slot, inventory, or the world.
     private void FinishManualHotbarDrag()
     {
         if (!_manualDragActive)
@@ -470,6 +274,21 @@ public partial class HotBarScript : PanelContainer
 
         GD.Print($"HotBar: Manual drag released. Source slot: {sourceSlot}, target slot: {targetSlot}");
 
+        if (sourceSlot < 0 || sourceSlot >= _hotbarItems.Length)
+        {
+            CleanupManualHotbarDrag();
+            return;
+        }
+
+        ItemInstance item = _hotbarItems[sourceSlot];
+
+        if (item == null || item.Definition == null)
+        {
+            CleanupManualHotbarDrag();
+            return;
+        }
+
+        // Hotbar -> hotbar slot.
         if (targetSlot >= 0 && targetSlot < _hotbarItems.Length)
         {
             if (targetSlot != sourceSlot)
@@ -481,39 +300,85 @@ public partial class HotBarScript : PanelContainer
             return;
         }
 
+        // Hotbar -> open container panel.
+        ContainerInventoryPanel containerPanel =
+            GetTree().GetFirstNodeInGroup(ContainerPanelGroupName) as ContainerInventoryPanel;
+
+        if (containerPanel != null)
+        {
+            bool movedToContainer = containerPanel.TryAcceptHotbarItemFromStorage(item, _hotbarStorage);
+
+            if (movedToContainer)
+            {
+                GD.Print($"HotBar: Moved item from hotbar to container: {item.Definition.ItemName}");
+                CleanupManualHotbarDrag();
+                return;
+            }
+        }
+
+        // Hotbar -> player inventory panel.
         InventoryContainerScript inventoryContainer =
             GetTree().GetFirstNodeInGroup(InventoryContainerGroupName) as InventoryContainerScript;
 
         if (inventoryContainer != null)
         {
-            ItemInstance item = _hotbarItems[sourceSlot];
+            bool movedToInventory = inventoryContainer.TryAcceptHotbarItemFromStorage(item, _hotbarStorage);
 
-            if (item != null && item.Definition != null)
+            if (movedToInventory)
             {
-                bool movedToInventory = inventoryContainer.TryAcceptHotbarItem(item);
-
-                if (movedToInventory)
-                {
-                    GD.Print($"HotBar: Moved item from hotbar to inventory: {item.Definition.ItemName}");
-
-                    if (_weaponHolder != null)
-                        _weaponHolder.ClearItem(false);
-
-                    RemoveItem(sourceSlot);
-
-                    CleanupManualHotbarDrag();
-                    return;
-                }
+                GD.Print($"HotBar: Moved item from hotbar to inventory: {item.Definition.ItemName}");
+                CleanupManualHotbarDrag();
+                return;
             }
         }
 
-        GD.Print("HotBar: Released outside hotbar and inventory. Throwing item into world.");
-        ThrowDraggedHotbarItem(sourceSlot);
+        // Hotbar -> world.
+        bool dropped = ItemDropUtility.TryDropFromStorage(
+            this,
+            _hotbarStorage,
+            item
+        );
+
+        if (!dropped)
+            GD.Print("HotBar: Released outside valid target. Drop failed, item stays in hotbar.");
 
         CleanupManualHotbarDrag();
     }
 
-    // Attempts to place an inventory item into the hotbar slot under the mouse.
+    public bool TryAcceptItemAtMouseFromStorage(ItemInstance item, IItemStorage sourceStorage)
+    {
+        if (sourceStorage == null)
+            return false;
+
+        if (item == null || item.Definition == null)
+            return false;
+
+        int targetSlot = GetSlotIndexAtGlobalMousePosition();
+
+        if (targetSlot < 0 || targetSlot >= _hotbarItems.Length)
+            return false;
+
+        if (_hotbarItems[targetSlot] != null)
+        {
+            GD.Print($"HotBar: Cannot accept item. Slot {targetSlot} is occupied.");
+            return false;
+        }
+
+        bool removedFromSource = sourceStorage.RemoveItemInstance(item);
+
+        if (!removedFromSource)
+        {
+            GD.Print($"HotBar: Could not remove item from source: {item.Definition.ItemName}");
+            return false;
+        }
+
+        PlaceItemInSlot(targetSlot, item);
+
+        GD.Print($"HotBar: Accepted item '{item.Definition.ItemName}' into slot {targetSlot}");
+
+        return true;
+    }
+
     public bool TryAcceptInventoryItemAtMouse(ItemInstance item)
     {
         if (item == null || item.Definition == null)
@@ -530,51 +395,181 @@ public partial class HotBarScript : PanelContainer
             return false;
         }
 
-        GD.Print($"HotBar: Accepting inventory item '{item.Definition.ItemName}' into slot {targetSlot}");
+        PlaceItemInSlot(targetSlot, item);
 
-        _hotbarItems[targetSlot] = item;
-
-        SyncInventorySlot(targetSlot);
-
-        UpdateSlotVisual(targetSlot);
-        UpdateSelectionVisual();
-        UpdateSelectedItemNameText();
-        UpdateHotbarActionPrompt();
-        UpdateHeldItem();
-
-        PrintHotbarState();
+        GD.Print($"HotBar: Accepted inventory item '{item.Definition.ItemName}' into slot {targetSlot}");
 
         return true;
     }
 
-    // Throws a dragged hotbar item into the world.
-    private void ThrowDraggedHotbarItem(int sourceSlot)
+    public IReadOnlyList<ItemInstance> GetHotbarItems()
+    {
+        return _hotbarItems;
+    }
+
+    public bool HasFreeSlot()
+    {
+        for (int i = 0; i < _hotbarItems.Length; i++)
+        {
+            if (_hotbarItems[i] == null)
+                return true;
+        }
+
+        return false;
+    }
+
+    public bool TryAddItemToFirstFreeSlot(ItemInstance item)
+    {
+        if (item == null || item.Definition == null)
+            return false;
+
+        for (int i = 0; i < _hotbarItems.Length; i++)
+        {
+            if (_hotbarItems[i] != null)
+                continue;
+
+            PlaceItemInSlot(i, item);
+
+            GD.Print($"HotBar: Added item to first free slot {i}: {item.Definition.ItemName}");
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool TryRemoveItemInstance(ItemInstance item)
+    {
+        if (item == null)
+            return false;
+
+        for (int i = 0; i < _hotbarItems.Length; i++)
+        {
+            if (_hotbarItems[i] != item)
+                continue;
+
+            RemoveItem(i, false);
+            return true;
+        }
+
+        return false;
+    }
+
+    private void PlaceItemInSlot(int slot, ItemInstance item)
+    {
+        if (slot < 0 || slot >= _hotbarItems.Length)
+            return;
+
+        _hotbarItems[slot] = item;
+
+        RefreshHotbarAfterSlotChange(slot);
+    }
+
+    private void MoveOrSwapHotbarSlots(int sourceSlot, int targetSlot)
     {
         if (sourceSlot < 0 || sourceSlot >= _hotbarItems.Length)
             return;
 
-        ItemInstance item = _hotbarItems[sourceSlot];
+        if (targetSlot < 0 || targetSlot >= _hotbarItems.Length)
+            return;
 
+        ItemInstance sourceItem = _hotbarItems[sourceSlot];
+
+        if (sourceItem == null || sourceItem.Definition == null)
+            return;
+
+        ItemInstance targetItem = _hotbarItems[targetSlot];
+
+        GD.Print($"HotBar: Moving '{sourceItem.Definition.ItemName}' from slot {sourceSlot} to slot {targetSlot}");
+
+        _hotbarItems[targetSlot] = sourceItem;
+        _hotbarItems[sourceSlot] = targetItem;
+
+        RefreshHotbarAfterSlotChange(sourceSlot);
+        RefreshHotbarAfterSlotChange(targetSlot);
+    }
+
+    public void RemoveItem(int slot)
+    {
+        RemoveItem(slot, false);
+    }
+
+    public void RemoveItem(int slot, bool playHideAnimation)
+    {
+        ClearHoldUse();
+
+        GD.Print($"HotBar: Removing item from slot {slot}");
+
+        if (slot < 0 || slot >= _hotbarItems.Length)
+            return;
+
+        bool removedSelectedHeldItem = slot == _selectedIndex && _hotbarItems[slot] != null;
+
+        _hotbarItems[slot] = null;
+
+        SyncInventorySlot(slot);
+        UpdateSlotVisual(slot);
+        UpdateSelectionVisual();
+        UpdateSelectedItemNameText();
+
+        if (removedSelectedHeldItem && _weaponHolder != null)
+        {
+            _lastEquippedItem = null;
+            _weaponHolder.ClearItem(playHideAnimation);
+        }
+        else
+        {
+            UpdateHeldItem();
+        }
+
+        UpdateHotbarActionPrompt();
+        PrintHotbarState();
+
+        if (slot == _selectedIndex)
+            EmitSelectedItemChanged();
+    }
+
+    private void RefreshHotbarAfterSlotChange(int slot)
+    {
+        SyncInventorySlot(slot);
+        UpdateSlotVisual(slot);
+        UpdateSelectionVisual();
+        UpdateSelectedItemNameText();
+        UpdateHeldItem();
+        UpdateHotbarActionPrompt();
+        PrintHotbarState();
+
+        if (slot == _selectedIndex)
+            EmitSelectedItemChanged();
+    }
+
+    private void SyncInventorySlot(int slot)
+    {
+        if (_inventory == null)
+            return;
+
+        if (_inventory.playerHotBar == null)
+            return;
+
+        if (slot < 0 || slot >= _inventory.playerHotBar.Length)
+            return;
+
+        _inventory.playerHotBar[slot] = _hotbarItems[slot];
+    }
+
+    private void OnHotbarItemAdded(ItemInstance item, int slot)
+    {
         if (item == null || item.Definition == null)
             return;
 
-        bool spawned = SpawnWorldItem(item);
-
-        if (!spawned)
-        {
-            GD.Print("HotBar: Drag throw failed. Item stays in hotbar.");
+        if (slot < 0 || slot >= _hotbarItems.Length)
             return;
-        }
 
-        GD.Print($"HotBar: Drag-threw item '{item.Definition.ItemName}' into world.");
+        GD.Print($"HotBar: Received item '{item.Definition.ItemName}' for slot {slot}");
 
-        if (_weaponHolder != null)
-            _weaponHolder.ClearItem(false);
-
-        RemoveItem(sourceSlot);
+        PlaceItemInSlot(slot, item);
     }
 
-    // Removes the drag preview and clears drag state.
     private void CleanupManualHotbarDrag()
     {
         _manualDragActive = false;
@@ -590,7 +585,6 @@ public partial class HotBarScript : PanelContainer
         _manualDragPreview = null;
     }
 
-    // Keeps the dragged item preview centered on the mouse.
     private void UpdateManualDragPreviewPosition()
     {
         if (_manualDragPreview == null)
@@ -602,9 +596,11 @@ public partial class HotBarScript : PanelContainer
             mousePosition - (_manualDragPreview.Size * 0.5f);
     }
 
-    // Returns the hotbar slot index under the mouse, or -1 if none.
     private int GetSlotIndexAtGlobalMousePosition()
     {
+        if (_itemSlotArray == null)
+            return -1;
+
         Vector2 mousePosition = GetViewport().GetMousePosition();
 
         for (int i = 0; i < _itemSlotArray.Length; i++)
@@ -614,102 +610,92 @@ public partial class HotBarScript : PanelContainer
             if (slotNode == null)
                 continue;
 
-            Rect2 globalRect = slotNode.GetGlobalRect();
-
-            if (globalRect.HasPoint(mousePosition))
+            if (slotNode.GetGlobalRect().HasPoint(mousePosition))
                 return i;
         }
 
         return -1;
     }
 
-    // Swaps/moves items between two hotbar slots.
-    private void MoveOrSwapHotbarSlots(int sourceSlot, int targetSlot)
+    public void UpdateSlot(int slot, ItemInstance item)
     {
-        if (sourceSlot < 0 || sourceSlot >= _hotbarItems.Length)
+        if (_itemSlotArray == null)
+        {
+            GD.PushError("HotBar: Cannot update slot because _itemSlotArray is null.");
+            return;
+        }
+
+        if (slot < 0 || slot >= _itemSlotArray.Length)
             return;
 
-        if (targetSlot < 0 || targetSlot >= _hotbarItems.Length)
+        TextureRect slotNode = _itemSlotArray[slot];
+
+        if (slotNode == null)
+        {
+            GD.PushError($"HotBar: Cannot update slot {slot} because ItemSlot{slot} is null.");
             return;
+        }
 
-        ItemInstance sourceItem = _hotbarItems[sourceSlot];
+        TextureRect icon = slotNode.GetNodeOrNull<TextureRect>("Icon");
 
-        if (sourceItem == null)
-            return;
+        if (icon == null)
+        {
+            icon = new TextureRect();
+            icon.Name = "Icon";
+            icon.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
+            icon.StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered;
+            icon.MouseFilter = MouseFilterEnum.Ignore;
+            icon.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+            slotNode.AddChild(icon);
+        }
 
-        ItemInstance targetItem = _hotbarItems[targetSlot];
+        icon.Position = Vector2.Zero;
+        icon.Size = slotNode.Size;
 
-        GD.Print(
-            $"HotBar: Moving '{sourceItem.Definition.ItemName}' from slot {sourceSlot} to slot {targetSlot}"
-        );
-
-        _hotbarItems[targetSlot] = sourceItem;
-        _hotbarItems[sourceSlot] = targetItem;
-
-        SyncInventorySlot(sourceSlot);
-        SyncInventorySlot(targetSlot);
-
-        UpdateSlotVisual(sourceSlot);
-        UpdateSlotVisual(targetSlot);
-
-        UpdateSelectionVisual();
-        UpdateSelectedItemNameText();
-        UpdateHotbarActionPrompt();
-        UpdateHeldItem();
-
-        PrintHotbarState();
+        icon.Texture = item?.Definition.Icon;
+        icon.Visible = item != null;
+        icon.MouseFilter = MouseFilterEnum.Ignore;
     }
 
-    // Copies one hotbar slot back into the PlayerInventory array.
-    private void SyncInventorySlot(int slot)
-    {
-        if (_inventory == null)
-            return;
-
-        if (_inventory.playerHotBar == null)
-            return;
-
-        if (slot < 0 || slot >= _inventory.playerHotBar.Length)
-            return;
-
-        _inventory.playerHotBar[slot] = _hotbarItems[slot];
-    }
-
-    // Receives new hotbar items from PlayerInventory.
-    private void OnHotbarItemAdded(ItemInstance item, int slot)
-    {
-        if (item == null || item.Definition == null)
-            return;
-
-        GD.Print($"HotBar: Received item '{item.Definition.ItemName}' for slot {slot}");
-
-        if (slot < 0 || slot >= _hotbarItems.Length)
-            return;
-
-        _hotbarItems[slot] = item;
-
-        SyncInventorySlot(slot);
-
-        UpdateSlotVisual(slot);
-        UpdateSelectedItemNameText();
-        UpdateHotbarActionPrompt();
-        UpdateHeldItem();
-
-        PrintHotbarState();
-    }
-
-    // Redraws one hotbar slot icon.
     private void UpdateSlotVisual(int index)
     {
-        GD.Print($"HotBar: Updating slot visual {index}");
+        if (_itemSlotArray == null)
+        {
+            GD.PushError("HotBar: Cannot update slot visual because _itemSlotArray is null.");
+            return;
+        }
 
         if (index < 0 || index >= _itemSlotArray.Length)
             return;
 
+        if (_itemSlotArray[index] == null)
+        {
+            GD.PushError($"HotBar: Cannot update slot visual {index} because ItemSlot{index} is null.");
+            return;
+        }
+
         UpdateSlot(index, _hotbarItems[index]);
     }
 
-    // Moves the selected slot left/right and refreshes related visuals.
+    private void UpdateSelectionVisual()
+    {
+        if (_selectedItemSlot == null)
+            return;
+
+        if (_itemSlotArray == null)
+            return;
+
+        if (_selectedIndex < 0 || _selectedIndex >= _itemSlotArray.Length)
+            return;
+
+        TextureRect selectedSlot = _itemSlotArray[_selectedIndex];
+
+        if (selectedSlot == null)
+            return;
+
+        _selectedItemSlot.GlobalPosition = selectedSlot.GlobalPosition;
+    }
+
     private void ChangeSelection(int direction)
     {
         ClearHoldUse();
@@ -717,6 +703,9 @@ public partial class HotBarScript : PanelContainer
         int previousIndex = _selectedIndex;
 
         _selectedIndex += direction;
+
+        if (_itemSlotArray == null || _itemSlotArray.Length == 0)
+            return;
 
         if (_selectedIndex < 0)
             _selectedIndex = _itemSlotArray.Length - 1;
@@ -726,265 +715,242 @@ public partial class HotBarScript : PanelContainer
 
         GD.Print($"HotBar: Selection changed {previousIndex} -> {_selectedIndex}");
 
-        PrintSelectedSlotInfo();
-
         UpdateSelectionVisual();
         UpdateSelectedItemNameText();
         UpdateHotbarActionPrompt();
         UpdateHeldItem();
+
+        EmitSelectedItemChanged();
     }
 
-    // Moves the selected-slot frame to the selected hotbar slot.
-    private void UpdateSelectionVisual()
-    {
-        GD.Print($"HotBar: Updating selection visual for slot {_selectedIndex}");
-
-        if (_selectedItemSlot == null)
-            return;
-
-        if (_selectedIndex < 0 || _selectedIndex >= _itemSlotArray.Length)
-            return;
-
-        _selectedItemSlot.GlobalPosition =
-            _itemSlotArray[_selectedIndex].GlobalPosition;
-    }
-
-    // Returns the currently selected hotbar item, or null if the slot is empty.
     public ItemInstance GetSelectedItem()
     {
-        GD.Print($"HotBar: GetSelectedItem slot {_selectedIndex}");
+        if (_selectedIndex < 0 || _selectedIndex >= _hotbarItems.Length)
+            return null;
 
-        ItemInstance item = _hotbarItems[_selectedIndex];
-
-        if (item == null)
-            GD.Print("HotBar: Selected slot empty");
-        else
-            GD.Print($"HotBar: Selected item {item.Definition.ItemName}");
-
-        return item;
-        
+        return _hotbarItems[_selectedIndex];
     }
 
-    // Equips or clears the 3D held item model based on the selected item.
     private void UpdateHeldItem()
     {
-        GD.Print("HotBar: UpdateHeldItem called");
-
         if (_weaponHolder == null)
             return;
 
         ItemInstance item = GetSelectedItem();
 
+        // Nothing changed, so don't replay equip/holster logic.
         if (_lastEquippedItem == item)
             return;
 
+        ItemInstance previousItem = _lastEquippedItem;
+
         _lastEquippedItem = item;
 
+        // Selected slot is empty.
+        // If we previously had an item equipped, play the hide/holster animation.
         if (item == null)
         {
-            _weaponHolder.ClearItem();
+            bool shouldPlayHideAnimation = previousItem != null;
+            _weaponHolder.ClearItem(shouldPlayHideAnimation);
             return;
         }
 
-        if (item.Definition.WorldModel == null)
+        // Selected item exists but cannot be shown in hand.
+        // Treat this like holstering if something was previously equipped.
+        if (item.Definition == null || item.Definition.WorldModel == null)
         {
-            GD.Print($"HotBar: {item.Definition.ItemName} has no WorldModel");
-            _weaponHolder.ClearItem();
+            bool shouldPlayHideAnimation = previousItem != null;
+            _weaponHolder.ClearItem(shouldPlayHideAnimation);
             return;
         }
 
+        // Selected item has a valid hand model, so equip it.
         _weaponHolder.EquipItem(item);
     }
 
-    // Removes an item from a hotbar slot and refreshes UI/state.
-    public void RemoveItem(int slot)
+    private void HandleActionInput(InputEvent inputEvent)
     {
-        ClearHoldUse();
-
-        GD.Print($"HotBar: Removing item from slot {slot}");
-
-        if (slot < 0 || slot >= _hotbarItems.Length)
+        if (IsInventoryMode() || IsItemUIMode())
             return;
-
-        _hotbarItems[slot] = null;
-
-        SyncInventorySlot(slot);
-
-        UpdateSlotVisual(slot);
-        UpdateSelectedItemNameText();
-        UpdateHeldItem();
-        UpdateHotbarActionPrompt();
-        PrintHotbarState();
-    }
-
-    // Sets the icon texture/visibility for a hotbar slot.
-    public void UpdateSlot(int slot, ItemInstance item)
-    {
-        GD.Print($"HotBar: UpdateSlot {slot} item {(item != null ? item.Definition.ItemName : "NULL")}");
-
-        if (slot < 0 || slot >= _itemSlotArray.Length)
-            return;
-
-        TextureRect slotNode = _itemSlotArray[slot];
-        TextureRect icon = slotNode.GetNodeOrNull<TextureRect>("Icon");
-
-        if (icon == null)
-        {
-            GD.Print($"HotBar: Creating icon node for slot {slot}");
-
-            icon = new TextureRect();
-            icon.Name = "Icon";
-
-            icon.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
-            icon.StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered;
-            icon.MouseFilter = MouseFilterEnum.Ignore;
-
-            icon.SetAnchorsPreset(Control.LayoutPreset.FullRect);
-
-            slotNode.AddChild(icon);
-        }
-
-        icon.Position = Vector2.Zero;
-        icon.Size = slotNode.Size;
-
-        icon.Texture = item?.Definition.Icon;
-        icon.Visible = item != null;
-
-        icon.MouseFilter = MouseFilterEnum.Ignore;
-    }
-
-    // Throws the selected item into the world and removes it from the hotbar.
-    private void DiscardSelectedItem()
-    {
-        ClearHoldUse();
-
-        GD.Print("HotBar: Attempting to discard selected item");
-
-        PrintSelectedSlotInfo();
 
         ItemInstance item = GetSelectedItem();
 
-        if (item == null)
-        {
-            GD.Print("HotBar: Discard failed (slot empty)");
+        if (item == null || item.Definition == null)
             return;
-        }
 
-        bool spawned = SpawnWorldItem(item);
-
-        if (!spawned)
-        {
-            GD.Print("HotBar: Discard throw failed. Item stays in hotbar.");
+        // Do not allow the selected item's action to run unless the correct model
+        // is actually equipped visually.
+        if (_weaponHolder != null && !_weaponHolder.IsReadyForItem(item))
             return;
+
+        if (item.Definition.Actions == null || item.Definition.Actions.Count == 0)
+            return;
+
+        Node player = GetTree().GetFirstNodeInGroup("player");
+
+        if (player == null)
+            return;
+
+        for (int i = 0; i < item.Definition.Actions.Count; i++)
+        {
+            ItemAction action = item.Definition.Actions[i];
+
+            if (action == null)
+                continue;
+
+            if (string.IsNullOrWhiteSpace(action.InputActionName))
+                continue;
+
+            if (inputEvent.IsActionPressed(action.InputActionName))
+            {
+                if (!action.CanExecute(player, item))
+                    continue;
+
+                if (action.HoldRequired)
+                {
+                    StartHoldUse(item, action);
+                    return;
+                }
+
+                ExecuteAction(item, action);
+                return;
+            }
+
+            if (inputEvent.IsActionReleased(action.InputActionName))
+            {
+                if (_holdUseActive && _holdUseAction == action)
+                {
+                    ClearHoldUse();
+                    return;
+                }
+            }
         }
-
-        GD.Print($"HotBar: Item '{item.Definition.ItemName}' thrown into world");
-
-        if (_weaponHolder != null)
-            _weaponHolder.ClearItem(false);
-
-        RemoveItem(_selectedIndex);
-
-        UpdateHotbarActionPrompt();
     }
 
-    // Spawns a WorldItem scene in front of the camera.
-    private bool SpawnWorldItem(ItemInstance item)
+    private void StartHoldUse(ItemInstance item, ItemAction action)
     {
-        GD.Print($"HotBar: SpawnWorldItem {item?.Definition?.ItemName}");
+        if (item == null || item.Definition == null || action == null)
+            return;
 
-        if (item == null)
-            return false;
+        _holdUseActive = true;
+        _holdUseCompleted = false;
+        _holdUseTimer = 0.0f;
+        _holdUseItem = item;
+        _holdUseAction = action;
 
-        Camera3D cam = GetViewport().GetCamera3D();
+        GD.Print($"HotBar: Started hold action {action.GetType().Name} for {item.Definition.ItemName}.");
+    }
 
-        if (cam == null)
+    private void UpdateHoldUse(float delta)
+    {
+        if (!_holdUseActive)
+            return;
+
+        if (_holdUseCompleted)
+            return;
+
+        if (_holdUseAction == null || string.IsNullOrWhiteSpace(_holdUseAction.InputActionName))
         {
-            GD.Print("HotBar: Camera not found");
-            return false;
+            ClearHoldUse();
+            return;
         }
 
-        Vector3 forward = -cam.GlobalTransform.Basis.Z;
-
-        PackedScene worldItemScene = ItemScene;
-
-        if (worldItemScene == null)
+        if (!Input.IsActionPressed(_holdUseAction.InputActionName))
         {
-            GD.PushError("HotBar: ItemScene is NULL. Assign WorldItem scene in the HotBar inspector.");
-            return false;
+            ClearHoldUse();
+            return;
         }
 
-        WorldItem worldItem = worldItemScene.Instantiate<WorldItem>();
-
-        if (worldItem == null)
+        if (_holdUseItem == null || _holdUseItem.Definition == null)
         {
-            GD.PushError("HotBar: Failed to instantiate WorldItem. Make sure ItemScene root has WorldItem script.");
-            return false;
+            ClearHoldUse();
+            return;
         }
 
-        GetTree().CurrentScene.AddChild(worldItem);
+        if (GetSelectedItem() != _holdUseItem)
+        {
+            ClearHoldUse();
+            return;
+        }
 
-        worldItem.ItemInstance = item;
+        _holdUseTimer += delta;
 
-        worldItem.GlobalPosition =
-            cam.GlobalPosition + forward * 1.2f + Vector3.Up * 0.2f;
+        if (_holdUseTimer < _holdUseAction.HoldDuration)
+            return;
 
-        worldItem.Sleeping = false;
-        worldItem.CanSleep = false;
+        _holdUseCompleted = true;
 
-        Vector3 throwForce = forward * 3.0f + Vector3.Up * 1.5f;
+        ExecuteAction(_holdUseItem, _holdUseAction);
 
-        worldItem.ApplyImpulse(throwForce, Vector3.Zero);
+        ClearHoldUse();
+    }
 
-        worldItem.AngularVelocity = new Vector3(
-            (float)GD.RandRange(-2.0, 2.0),
-            (float)GD.RandRange(-2.0, 2.0),
-            (float)GD.RandRange(-2.0, 2.0)
+    private void ClearHoldUse()
+    {
+        _holdUseActive = false;
+        _holdUseCompleted = false;
+        _holdUseTimer = 0.0f;
+        _holdUseItem = null;
+        _holdUseAction = null;
+    }
+
+    private void ExecuteAction(ItemInstance item, ItemAction action)
+    {
+        if (item == null || item.Definition == null || action == null)
+            return;
+
+        Node player = GetTree().GetFirstNodeInGroup("player");
+
+        if (player == null)
+            return;
+
+        ItemActionResult result = action.Execute(player, item);
+
+        ApplyActionResult(item, result);
+    }
+
+    private void ApplyActionResult(ItemInstance item, ItemActionResult result)
+    {
+        if ((result & ItemActionResult.RemoveItem) != 0)
+        {
+            RemoveItem(_selectedIndex, false);
+            return;
+        }
+
+        if ((result & ItemActionResult.RefreshHeldItem) != 0)
+            UpdateHeldItem();
+
+        if ((result & ItemActionResult.RefreshPrompt) != 0)
+            UpdateHotbarActionPrompt();
+    }
+
+    private void DropSelectedItem()
+    {
+        ClearHoldUse();
+
+        ItemInstance item = GetSelectedItem();
+
+        if (item == null || item.Definition == null)
+        {
+            GD.Print("HotBar: Drop failed. Selected slot is empty.");
+            return;
+        }
+
+        bool dropped = ItemDropUtility.TryDropFromStorage(
+            this,
+            _hotbarStorage,
+            item
         );
 
-        GD.Print("HotBar: WorldItem spawned and item instance assigned");
-
-        return true;
-    }
-
-    // Debug prints the selected slot contents.
-    private void PrintSelectedSlotInfo()
-    {
-        ItemInstance item = _hotbarItems[_selectedIndex];
-
-        if (item == null)
+        if (!dropped)
         {
-            GD.Print($"HotBar: Slot {_selectedIndex} EMPTY");
+            GD.Print("HotBar: Drop failed. Item stays in hotbar.");
             return;
         }
 
-        GD.Print(
-            $"HotBar: Slot {_selectedIndex} | " +
-            $"Item: {item.Definition.ItemName} | " +
-            $"Icon: {(item.Definition.Icon != null ? item.Definition.Icon.ResourcePath : "null")} | " +
-            $"WorldModel: {(item.Definition.WorldModel != null ? item.Definition.WorldModel.ResourcePath : "null")}"
-        );
+        GD.Print($"HotBar: Dropped item into world: {item.Definition.ItemName}");
     }
 
-    // Debug prints all hotbar slots.
-    private void PrintHotbarState()
-    {
-        GD.Print("HotBar: ===== HOTBAR STATE =====");
-
-        for (int i = 0; i < _hotbarItems.Length; i++)
-        {
-            ItemInstance item = _hotbarItems[i];
-
-            if (item == null)
-                GD.Print($"Slot {i}: EMPTY");
-            else
-                GD.Print($"Slot {i}: {item.Definition.ItemName}");
-        }
-
-        GD.Print("HotBar: =======================");
-    }
-
-    // Shows HUD action prompts for the currently selected item.
     private void UpdateHotbarActionPrompt()
     {
         HideHotbarActionPrompts();
@@ -992,7 +958,7 @@ public partial class HotBarScript : PanelContainer
         if (_playerHUD == null)
             return;
 
-        ItemInstance item = _hotbarItems[_selectedIndex];
+        ItemInstance item = GetSelectedItem();
 
         if (item == null || item.Definition == null)
             return;
@@ -1033,7 +999,6 @@ public partial class HotBarScript : PanelContainer
         }
     }
 
-    // Hides all hotbar-related HUD prompts.
     private void HideHotbarActionPrompts()
     {
         if (_playerHUD == null)
@@ -1048,7 +1013,6 @@ public partial class HotBarScript : PanelContainer
         _playerHUD.HideButtonAction("hotbar_item");
     }
 
-    // Executes the first visible/usable action on the selected item.
     public void UseSelectedItem()
     {
         if (IsInventoryMode() || IsItemUIMode())
@@ -1059,6 +1023,9 @@ public partial class HotBarScript : PanelContainer
         if (item == null || item.Definition == null)
             return;
 
+        if (_weaponHolder != null && !_weaponHolder.IsReadyForItem(item))
+            return;
+            
         if (item.Definition.Actions == null || item.Definition.Actions.Count == 0)
             return;
 
@@ -1085,7 +1052,6 @@ public partial class HotBarScript : PanelContainer
         }
     }
 
-    // Updates the RichTextLabel with the selected item name, or "none" when the slot is empty.
     private void UpdateSelectedItemNameText()
     {
         if (_CurrentItemNameRichTextLabel == null)
@@ -1102,27 +1068,45 @@ public partial class HotBarScript : PanelContainer
         _CurrentItemNameRichTextLabel.Text = item.Definition.ItemName;
     }
 
-    // Public wrapper in case another script already calls this old method name.
+    private void EmitSelectedItemChanged()
+    {
+        SelectedItemChanged?.Invoke(GetSelectedItem());
+    }
+
     public void GetSelectedItemName()
     {
         UpdateSelectedItemNameText();
     }
 
-    // Returns the currently selected slot index.
     public int GetSelectedIndex()
     {
         return _selectedIndex;
     }
 
-    // True when the inventory UI is open.
     private bool IsInventoryMode()
     {
-        return robinsonGlobals.Instance != null && robinsonGlobals.Instance.OpenInventory ;
+        return robinsonGlobals.Instance != null && robinsonGlobals.Instance.OpenInventory;
     }
 
-    // True when an item-specific UI is open.
     private bool IsItemUIMode()
     {
-        return robinsonGlobals.Instance != null && robinsonGlobals.Instance.OpenItemUI ;
+        return robinsonGlobals.Instance != null && robinsonGlobals.Instance.OpenItemUI;
+    }
+
+    private void PrintHotbarState()
+    {
+        GD.Print("HotBar: ===== HOTBAR STATE =====");
+
+        for (int i = 0; i < _hotbarItems.Length; i++)
+        {
+            ItemInstance item = _hotbarItems[i];
+
+            if (item == null)
+                GD.Print($"Slot {i}: EMPTY");
+            else
+                GD.Print($"Slot {i}: {item.Definition.ItemName}");
+        }
+
+        GD.Print("HotBar: =======================");
     }
 }

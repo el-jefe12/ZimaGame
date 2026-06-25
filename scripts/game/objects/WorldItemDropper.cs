@@ -2,8 +2,10 @@ using Godot;
 
 public partial class WorldItemDropper : Node
 {
-    [ExportCategory("Drop Item")]
+    [ExportCategory("World Item Scene")]
+    [Export] public PackedScene WorldItemScene;
 
+    [ExportCategory("Drop Item")]
     [Export(PropertyHint.ResourceType, "Item")]
     public Resource DropItemDefinitionRaw;
 
@@ -17,18 +19,26 @@ public partial class WorldItemDropper : Node
 
     [ExportCategory("Drop Physics")]
     [Export] public float DropImpulseStrength = 1.5f;
-    [Export] public float ItemMass = 0.4f;
 
-    [ExportCategory("Generated World Item")]
-    [Export] public float PickupAreaRadius = 1.2f;
+    [ExportCategory("Single Dragged Item Drop")]
+    [Export] public string DropperGroupName = "world_item_dropper";
+    [Export] public float DragDropDistance = 1.2f;
+    [Export] public float DragDropUpOffset = 0.4f;
+    [Export] public float DragDropForwardImpulse = 3.0f;
+    [Export] public float DragDropUpImpulse = 1.5f;
 
     private readonly RandomNumberGenerator _random = new RandomNumberGenerator();
 
     public override void _Ready()
     {
         _random.Randomize();
+
+        // Lets ItemDropUtility find this dropper from any UI script.
+        AddToGroup(DropperGroupName);
     }
 
+    // Used by trees/resources/etc.
+    // Spawns random count of NEW item instances from DropItemDefinitionRaw.
     public void DropAt(Vector3 worldPosition)
     {
         Item dropItemDefinition = DropItemDefinitionRaw as Item;
@@ -39,20 +49,31 @@ public partial class WorldItemDropper : Node
             return;
         }
 
+        if (WorldItemScene == null)
+        {
+            GD.PrintErr("WorldItemDropper: WorldItemScene is not assigned.");
+            return;
+        }
+
         int minCount = Mathf.Min(MinDropCount, MaxDropCount);
         int maxCount = Mathf.Max(MinDropCount, MaxDropCount);
         int dropCount = _random.RandiRange(minCount, maxCount);
 
-        Node parent = GetTree().CurrentScene;
+        Node parent = GetDropParent();
 
         if (parent == null)
         {
-            parent = GetParent();
+            GD.PrintErr("WorldItemDropper: Could not find parent for dropped items.");
+            return;
         }
 
         for (int i = 0; i < dropCount; i++)
         {
-            WorldItem worldItem = CreateWorldItem(dropItemDefinition);
+            ItemInstance itemInstance = new ItemInstance(dropItemDefinition);
+            WorldItem worldItem = CreateWorldItem();
+
+            if (worldItem == null)
+                continue;
 
             parent.AddChild(worldItem);
 
@@ -65,22 +86,34 @@ public partial class WorldItemDropper : Node
                 Mathf.Sin(angle) * distance
             );
 
-            worldItem.GlobalPosition = worldPosition + offset;
+            Vector3 dropPosition = worldPosition + offset;
 
-            Vector3 impulseDirection = new Vector3(
+            Vector3 linearVelocity = new Vector3(
                 Mathf.Cos(angle),
                 0.8f,
                 Mathf.Sin(angle)
-            ).Normalized();
+            ).Normalized() * DropImpulseStrength;
 
-            worldItem.Sleeping = false;
-            worldItem.Freeze = false;
-            worldItem.LinearVelocity = impulseDirection * DropImpulseStrength;
+            Vector3 angularVelocity = new Vector3(
+                _random.RandfRange(-2.0f, 2.0f),
+                _random.RandfRange(-2.0f, 2.0f),
+                _random.RandfRange(-2.0f, 2.0f)
+            );
+
+            // Important:
+            // WorldItem stays frozen until its model/collision is built.
+            worldItem.PrepareDroppedItem(
+                itemInstance,
+                dropPosition,
+                linearVelocity,
+                angularVelocity
+            );
         }
 
         GD.Print($"WorldItemDropper: Spawned {dropCount} world item drops.");
     }
 
+    // Used by trees/resources/etc.
     public void DropAt(Node3D sourceNode)
     {
         if (sourceNode == null)
@@ -92,29 +125,98 @@ public partial class WorldItemDropper : Node
         DropAt(sourceNode.GlobalPosition);
     }
 
-    private WorldItem CreateWorldItem(Item itemDefinition)
+    // Used by inventory/container/hotbar dragging.
+    // Drops the EXISTING item instance, preserving durability/container contents/etc.
+    public bool DropItemInstanceFromCamera(ItemInstance itemInstance)
     {
-        WorldItem worldItem = new WorldItem();
+        if (itemInstance == null || itemInstance.Definition == null)
+        {
+            GD.PrintErr("WorldItemDropper: Cannot drop null ItemInstance.");
+            return false;
+        }
 
-        worldItem.Name = $"WorldItem_{itemDefinition.ItemName}";
-        worldItem.Mass = ItemMass;
+        if (WorldItemScene == null)
+        {
+            GD.PrintErr("WorldItemDropper: WorldItemScene is not assigned.");
+            return false;
+        }
 
-        Area3D pickupArea = new Area3D();
-        pickupArea.Name = "ItemDetectArea3D";
+        Camera3D camera = GetViewport().GetCamera3D();
 
-        CollisionShape3D pickupAreaShape = new CollisionShape3D();
-        pickupAreaShape.Name = "PickupAreaShape3D";
+        if (camera == null)
+        {
+            GD.PrintErr("WorldItemDropper: Could not find current Camera3D.");
+            return false;
+        }
 
-        SphereShape3D sphereShape = new SphereShape3D();
-        sphereShape.Radius = PickupAreaRadius;
+        Node parent = GetDropParent();
 
-        pickupAreaShape.Shape = sphereShape;
-        pickupArea.AddChild(pickupAreaShape);
+        if (parent == null)
+        {
+            GD.PrintErr("WorldItemDropper: Could not find parent for dragged item drop.");
+            return false;
+        }
 
-        worldItem.AddChild(pickupArea);
-        worldItem.ItemDetectArea3D = pickupArea;
+        WorldItem worldItem = CreateWorldItem();
 
-        worldItem.ItemInstance = new ItemInstance(itemDefinition);
+        if (worldItem == null)
+            return false;
+
+        parent.AddChild(worldItem);
+
+        Vector3 forward = -camera.GlobalTransform.Basis.Z;
+
+        Vector3 dropPosition =
+            camera.GlobalPosition
+            + forward * DragDropDistance
+            + Vector3.Up * DragDropUpOffset;
+
+        Vector3 linearVelocity =
+            forward * DragDropForwardImpulse
+            + Vector3.Up * DragDropUpImpulse;
+
+        Vector3 angularVelocity = new Vector3(
+            _random.RandfRange(-2.0f, 2.0f),
+            _random.RandfRange(-2.0f, 2.0f),
+            _random.RandfRange(-2.0f, 2.0f)
+        );
+
+        // Important:
+        // This uses the SAME ItemInstance that came from inventory/container/hotbar.
+        worldItem.PrepareDroppedItem(
+            itemInstance,
+            dropPosition,
+            linearVelocity,
+            angularVelocity
+        );
+
+        GD.Print($"WorldItemDropper: Dropped dragged item instance: {itemInstance.Definition.ItemName}");
+
+        return true;
+    }
+
+    private Node GetDropParent()
+    {
+        Node parent = GetTree().CurrentScene;
+
+        if (parent != null)
+            return parent;
+
+        return GetParent();
+    }
+
+    private WorldItem CreateWorldItem()
+    {
+        if (WorldItemScene == null)
+            return null;
+
+        WorldItem worldItem = WorldItemScene.Instantiate<WorldItem>();
+
+        if (worldItem == null)
+        {
+            GD.PrintErr("WorldItemDropper: WorldItemScene root must have WorldItem.cs attached.");
+            return null;
+        }
 
         return worldItem;
     }
