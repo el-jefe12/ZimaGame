@@ -38,28 +38,30 @@ public partial class OpenAction : ItemAction
             robinsonGlobals.Instance.OpenItemUI = true;
             robinsonGlobals.Instance.OpenInventory = false;
             robinsonGlobals.Instance.CanMove = false;
-            Input.MouseMode = Input.MouseModeEnum.Visible;
-
-            GD.Print("OpenAction: Item UI opened. Inventory blocked. Player movement disabled.");
         }
 
-    //    if (robinsonGlobals.Instance != null)
-     //   {
-     //       robinsonGlobals.Instance.OpenItemUI = false;
-    //        robinsonGlobals.Instance.CanMove = true;
-     //       Input.MouseMode = Input.MouseModeEnum.Captured;
-    //    }
+        Input.MouseMode = Input.MouseModeEnum.Visible;
 
-        // Create the UI overlay from the assigned PackedScene.
         Node overlayInstance = OpenScene.Instantiate();
-
-        // Add it to the active scene so it appears on screen.
         tree.CurrentScene.AddChild(overlayInstance);
 
-        string itemName = item?.Definition?.ItemName ?? "Unknown item";
-        GD.Print($"{itemName} opened UI overlay.");
+        GD.Print($"OpenAction: Instantiated {overlayInstance.Name}, type {overlayInstance.GetType().Name}");
 
-        // Item stays in the hotbar, but the prompt can refresh afterward.
+        if (overlayInstance is CanvasItem canvasItem)
+            canvasItem.Visible = true;
+
+        if (overlayInstance is IItemOpenableUI openableUi)
+        {
+            openableUi.OpenFromItem(player, item);
+        }
+        else
+        {
+            GD.Print($"OpenAction: {overlayInstance.Name} has no IItemOpenableUI. Opened as plain overlay.");
+        }
+
+        string itemName = item?.Definition?.ItemName ?? "Unknown item";
+        GD.Print($"OpenAction: {itemName} opened UI overlay.");
+
         return ItemActionResult.RefreshPrompt;
     }
 }

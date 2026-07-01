@@ -1,11 +1,14 @@
-[gd_resource type="Resource" script_class="CraftingBookPageResource" load_steps=3 format=3 uid="uid://c2v0my362xl0u"]
+[gd_resource type="Resource" script_class="CraftingBookPageResource" load_steps=4 format=3 uid="uid://c2v0my362xl0u"]
 
+[ext_resource type="Texture2D" uid="uid://bcke4ewo25j4o" path="res://gfx/UI/gameUI/crafting/recipe_image/fire_doodle_test.png" id="1_6sr8b"]
 [ext_resource type="Resource" uid="uid://brwsmumeqs6jw" path="res://resources/Crafting/crafting_recipes/CraftingRecipe_fire.tres" id="1_v2nr1"]
 [ext_resource type="Script" uid="uid://cp74dd8j22inl" path="res://data/crafting/CraftingBookPageResource.cs" id="2_6sr8b"]
 
 [resource]
 script = ExtResource("2_6sr8b")
 DisplayName = "Fire"
+ShortDescription = "To craft this item, you will need: Branches (3x) and Rocks (3x)."
 Description = "Greatest human invention. Warms your body"
+Graphic = ExtResource("1_6sr8b")
 Recipe = ExtResource("1_v2nr1")
 metadata/_custom_type_script = "uid://cp74dd8j22inl"

@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=3 uid="uid://dxbgqllnn0xx8"]
+[gd_scene load_steps=35 format=3 uid="uid://dxbgqllnn0xx8"]
 
 [ext_resource type="Script" uid="uid://dmabufsa151ot" path="res://scripts/player/playerScripts/PlayerController.cs" id="1_y4r1p"]
 [ext_resource type="PackedScene" uid="uid://c10b11dettwp7" path="res://scenes/UI/effect_overlay.tscn" id="2_4r5pv"]
@@ -26,6 +26,8 @@
 [ext_resource type="Resource" uid="uid://dtbc4fowv568k" path="res://resources/Items/spear.tres" id="21_ke2ow"]
 [ext_resource type="Resource" uid="uid://cmg5fy1vui747" path="res://resources/Items/energy_drink.tres" id="22_31cv2"]
 [ext_resource type="Resource" uid="uid://cx5eubxgvockq" path="res://resources/Items/beans_can.tres" id="23_31cv2"]
+[ext_resource type="Resource" uid="uid://stum0rvnvcrk" path="res://resources/Items/survival_book.tres" id="23_pf23h"]
+[ext_resource type="Resource" uid="uid://caaqvbhpihvd4" path="res://resources/Items/crafting_blueprint/blueprint_fire.tres" id="24_dt7fs"]
 [ext_resource type="Script" uid="uid://xasodsum051x" path="res://scripts/player/player_effects/PlayerEffects.cs" id="27_pf23h"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_g2els"]
@@ -82,7 +84,7 @@ layer = 2
 
 [node name="EffectOverlay" parent="PlayerHead/yawPivot/pitchPivot/cameraBob/CharacterCamera3D/PlayerUICanvasLayer" instance=ExtResource("2_4r5pv")]
 
-[node name="GameUI" parent="PlayerHead/yawPivot/pitchPivot/cameraBob/CharacterCamera3D/PlayerUICanvasLayer" node_paths=PackedStringArray("Player", "Player_Interactor", "PlayerInventory") groups=["hud"] instance=ExtResource("2_g2els")]
+[node name="GameUI" parent="PlayerHead/yawPivot/pitchPivot/cameraBob/CharacterCamera3D/PlayerUICanvasLayer" node_paths=PackedStringArray("Player", "Player_Interactor", "PlayerInventory") instance=ExtResource("2_g2els")]
 Player = NodePath("../../../../../../..")
 Player_Interactor = NodePath("../../../../../../../PlayerScriptsAttached/PlayerInteractor")
 PlayerInventory = NodePath("../../../../../../../PlayerScriptsAttached/Inventory")
@@ -147,7 +149,7 @@ SprintBobPosAmplitude = 0.08
 [node name="Inventory" type="Node3D" parent="PlayerScriptsAttached"]
 unique_name_in_owner = true
 script = ExtResource("7_fjrip")
-StartingItems = Array[ExtResource("16_l71n6")]([ExtResource("17_ke2ow"), ExtResource("18_ujl30"), ExtResource("19_31cv2"), ExtResource("21_ke2ow"), ExtResource("23_31cv2"), ExtResource("22_31cv2"), ExtResource("22_31cv2")])
+StartingItems = Array[ExtResource("16_l71n6")]([ExtResource("17_ke2ow"), ExtResource("18_ujl30"), ExtResource("19_31cv2"), ExtResource("21_ke2ow"), ExtResource("23_31cv2"), ExtResource("22_31cv2"), ExtResource("22_31cv2"), ExtResource("23_pf23h"), ExtResource("24_dt7fs")])
 
 [node name="PlayerPush" type="Node3D" parent="PlayerScriptsAttached"]
 unique_name_in_owner = true

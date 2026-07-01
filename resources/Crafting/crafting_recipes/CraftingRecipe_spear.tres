@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://m2f7h5b81nkv" path="res://data/Item.cs" id="1_ai5yi"]
 [ext_resource type="Script" uid="uid://dgcu3qqr25gu6" path="res://data/crafting/CraftingRecipeResource.cs" id="2_8ukin"]
-[ext_resource type="Resource" uid="uid://cpbrae4g133sh" path="res://resources/Items/match.tres" id="2_pscs1"]
+[ext_resource type="Resource" uid="uid://b0slfu10mk406" path="res://resources/Items/branch.tres" id="2_pscs1"]
 [ext_resource type="Resource" uid="uid://dtbc4fowv568k" path="res://resources/Items/spear.tres" id="3_wm6sx"]
 
 [resource]

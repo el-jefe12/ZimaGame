@@ -6,6 +6,7 @@
 [resource]
 script = ExtResource("1_73pe4")
 DisplayName = "Spear"
+ShortDescription = "To craft this item, you will need: Branch (2x)."
 Description = "Allow you to fish or hunt animals, it's esentially a sharp stick."
 Recipe = ExtResource("1_784ly")
 metadata/_custom_type_script = "uid://cp74dd8j22inl"

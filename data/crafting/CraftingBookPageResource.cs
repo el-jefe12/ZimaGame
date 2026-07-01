@@ -4,6 +4,9 @@ using Godot;
 public partial class CraftingBookPageResource : Resource
 {
     [Export] public string DisplayName { get; set; } = "";
+    
+    [Export(PropertyHint.MultilineText)]
+    public string ShortDescription { get; set; } = "";
 
     [Export(PropertyHint.MultilineText)]
     public string Description { get; set; } = "";

@@ -9,6 +9,7 @@ public partial class CraftingRecipeResource : Resource
     // 0 1 2
     // 3 4 5
     // 6 7 8
+
     [Export] public Godot.Collections.Array<Item> Ingredients { get; set; } = new();
 
     [Export] public Item ResultItem { get; set; }

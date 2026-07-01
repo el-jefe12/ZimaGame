@@ -1,8 +1,13 @@
-[gd_resource type="Resource" script_class="CraftingRecipeResource" load_steps=3 format=3 uid="uid://brwsmumeqs6jw"]
+[gd_resource type="Resource" script_class="CraftingRecipeResource" load_steps=6 format=3 uid="uid://brwsmumeqs6jw"]
 
 [ext_resource type="Script" uid="uid://m2f7h5b81nkv" path="res://data/Item.cs" id="1_nh8du"]
 [ext_resource type="Script" uid="uid://dgcu3qqr25gu6" path="res://data/crafting/CraftingRecipeResource.cs" id="2_r4w8r"]
+[ext_resource type="Resource" uid="uid://b0slfu10mk406" path="res://resources/Items/branch.tres" id="2_vdaaw"]
+[ext_resource type="Resource" uid="uid://yt6ax8ipa05j" path="res://resources/Items/rock_material.tres" id="3_b2d7s"]
+[ext_resource type="Resource" uid="uid://w70e7n8npycj" path="res://resources/Items/knife.tres" id="4_2504p"]
 
 [resource]
 script = ExtResource("2_r4w8r")
+Ingredients = Array[ExtResource("1_nh8du")]([ExtResource("2_vdaaw"), ExtResource("2_vdaaw"), ExtResource("2_vdaaw"), ExtResource("3_b2d7s"), ExtResource("3_b2d7s"), ExtResource("3_b2d7s")])
+ResultItem = ExtResource("4_2504p")
 metadata/_custom_type_script = "uid://dgcu3qqr25gu6"

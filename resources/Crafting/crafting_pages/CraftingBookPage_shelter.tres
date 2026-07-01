@@ -6,6 +6,7 @@
 [resource]
 script = ExtResource("1_vnojy")
 DisplayName = "Shelter"
+ShortDescription = "To craft this item, you will need: Branches (6x)."
 Description = "Protects you from rain and keeps you warm."
 Recipe = ExtResource("1_jrcei")
 metadata/_custom_type_script = "uid://cp74dd8j22inl"

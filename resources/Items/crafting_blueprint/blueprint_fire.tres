@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="Item" load_steps=5 format=3 uid="uid://caaqvbhpihvd4"]
+
+[ext_resource type="Script" uid="uid://2ofxdkbacdjx" path="res://data/ItemAction.cs" id="1_u5rcm"]
+[ext_resource type="Texture2D" uid="uid://b5or5rmvibwlq" path="res://gfx/UI/mainMenu/alaska_star.png" id="2_i3wgv"]
+[ext_resource type="Script" uid="uid://m2f7h5b81nkv" path="res://data/Item.cs" id="2_pn21o"]
+[ext_resource type="PackedScene" uid="uid://ca4lqwq2ku3ov" path="res://models/player/tools/crafting_blueprints/blueprint.tscn" id="3_mjgpa"]
+
+[resource]
+script = ExtResource("2_pn21o")
+ItemName = "Fire Blueprint"
+WorldModel = ExtResource("3_mjgpa")
+Icon = ExtResource("2_i3wgv")
+ModelRotation = Vector3(90, 90, 0)
+ModelScale = Vector3(1.5, 1.5, 1.5)
+metadata/_custom_type_script = "uid://m2f7h5b81nkv"

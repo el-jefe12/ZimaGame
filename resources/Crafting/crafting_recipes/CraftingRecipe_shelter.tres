@@ -1,8 +1,12 @@
-[gd_resource type="Resource" script_class="CraftingRecipeResource" load_steps=3 format=3 uid="uid://ddmaei0nkrdik"]
+[gd_resource type="Resource" script_class="CraftingRecipeResource" load_steps=5 format=3 uid="uid://ddmaei0nkrdik"]
 
 [ext_resource type="Script" uid="uid://m2f7h5b81nkv" path="res://data/Item.cs" id="1_jr0wy"]
 [ext_resource type="Script" uid="uid://dgcu3qqr25gu6" path="res://data/crafting/CraftingRecipeResource.cs" id="2_lktko"]
+[ext_resource type="Resource" uid="uid://b0slfu10mk406" path="res://resources/Items/branch.tres" id="2_qboxy"]
+[ext_resource type="Resource" uid="uid://cpbrae4g133sh" path="res://resources/Items/match.tres" id="3_qboxy"]
 
 [resource]
 script = ExtResource("2_lktko")
+Ingredients = Array[ExtResource("1_jr0wy")]([ExtResource("2_qboxy"), ExtResource("2_qboxy"), ExtResource("2_qboxy"), ExtResource("2_qboxy"), ExtResource("2_qboxy"), ExtResource("2_qboxy"), ExtResource("2_qboxy"), null])
+ResultItem = ExtResource("3_qboxy")
 metadata/_custom_type_script = "uid://dgcu3qqr25gu6"

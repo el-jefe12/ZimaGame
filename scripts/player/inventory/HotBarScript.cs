@@ -9,6 +9,8 @@ public partial class HotBarScript : PanelContainer
     private WeaponHolder _weaponHolder;
     private playerHUD _playerHUD;
 
+    private buttonActionIndicatorLogic _buttonActionIndicatorLogic;
+
     private TextureRect _selectedItemSlot;
     private TextureRect[] _itemSlotArray;
 
